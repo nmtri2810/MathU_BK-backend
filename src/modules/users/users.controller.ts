@@ -12,7 +12,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { UserEntity } from './entities/user.entity';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 @ApiTags('users')
@@ -20,25 +20,25 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @ApiCreatedResponse({ type: UserEntity })
+  @ApiCreatedResponse({ type: User })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   @Get()
-  @ApiOkResponse({ type: UserEntity, isArray: true })
+  @ApiOkResponse({ type: User, isArray: true })
   findAll() {
     return this.usersService.findAll();
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: UserEntity })
+  @ApiOkResponse({ type: User })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
   }
 
   @Patch(':id')
-  @ApiOkResponse({ type: UserEntity })
+  @ApiOkResponse({ type: User })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -47,7 +47,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @ApiOkResponse({ type: UserEntity })
+  @ApiOkResponse({ type: User })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(id);
   }
