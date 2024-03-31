@@ -6,20 +6,25 @@ import {
   Patch,
   Param,
   Delete,
-  ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
+import { CustomParseIntPipe } from 'src/common/pipes/custom-parse-int.pipe';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @ApiTags('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -32,13 +37,14 @@ export class UsersController {
         value: {
           email: 'test@gmail.com',
           username: 'test',
+          password: 'password',
         },
       },
     },
   })
   @ApiCreatedResponse({ type: User, description: 'User created successfully' })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    return new User(await this.usersService.create(createUserDto));
   }
 
   @Get()
@@ -47,14 +53,15 @@ export class UsersController {
     isArray: true,
     description: 'Get user list successfully',
   })
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    const users = await this.usersService.findAll();
+    return users.map((user) => new User(user));
   }
 
   @Get(':id')
   @ApiOkResponse({ type: User, description: 'Get user successfully' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findOne(id);
+  async findOne(@Param('id', CustomParseIntPipe) id: number) {
+    return new User(await this.usersService.findOne(id));
   }
 
   @Patch(':id')
@@ -65,21 +72,22 @@ export class UsersController {
         value: {
           email: 'test@gmail.com',
           username: 'test',
+          password: 'password',
         },
       },
     },
   })
   @ApiOkResponse({ type: User, description: 'Update user successfully' })
-  update(
-    @Param('id', ParseIntPipe) id: number,
+  async update(
+    @Param('id', CustomParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.usersService.update(id, updateUserDto);
+    return new User(await this.usersService.update(id, updateUserDto));
   }
 
   @Delete(':id')
   @ApiOkResponse({ type: User, description: 'Delete user successfully' })
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.remove(id);
+  async remove(@Param('id', CustomParseIntPipe) id: number) {
+    return new User(await this.usersService.remove(id));
   }
 }

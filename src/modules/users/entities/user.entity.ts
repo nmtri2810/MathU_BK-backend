@@ -1,18 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Users } from '@prisma/client';
+import { Exclude } from 'class-transformer';
 
-export class User {
+export class User implements Users {
+  constructor(partial: Partial<User>) {
+    Object.assign(this, partial);
+  }
+
   @ApiProperty()
   id: number;
 
   @ApiProperty()
-  createdAt: Date;
+  created_at: Date;
 
   @ApiProperty()
-  updatedAt: Date;
+  updated_at: Date;
+
+  @ApiProperty()
+  deleted_at: Date;
 
   @ApiProperty()
   email: string;
 
+  @Exclude()
+  password: string;
+
   @ApiProperty()
   username: string;
+
+  @ApiProperty()
+  is_admin: boolean;
 }

@@ -11,5 +11,9 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsNotEmpty()
   @ApiProperty()
+  password: string;
+
+  @IsNotEmpty()
+  @ApiProperty()
   username: string;
 }
