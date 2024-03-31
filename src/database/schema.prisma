@@ -14,9 +14,12 @@ datasource db {
 }
 
 model Users {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String   @unique
-  username  String
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+  email      String    @unique
+  password   String
+  username   String?
+  is_admin   Boolean   @default(false)
 }
