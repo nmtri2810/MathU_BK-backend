@@ -5,7 +5,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/environments/configuration';
-import { LoggerMiddleware } from './config/middleware/logger.middleware';
+import { LoggerMiddleware } from './config/logger/logger.middleware';
 import { LoggerModule } from './config/logger/logger.module';
 
 @Module({
