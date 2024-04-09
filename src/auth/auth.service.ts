@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Auth } from './entity/auth.entity';
 import { PrismaService } from 'nestjs-prisma';
-import { ResponseMessages } from 'src/common/messages/response-messages';
+import { ResponseMessages } from 'src/common/constants';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 

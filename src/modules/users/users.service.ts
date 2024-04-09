@@ -6,10 +6,10 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'nestjs-prisma';
-import { ResponseMessages } from 'src/common/messages/response-messages';
+import { ResponseMessages } from 'src/common/constants';
 import { Prisma } from '@prisma/client';
 import { User } from './entities/user.entity';
-import { PrismaClientErrorCode } from 'src/common/constants/prisma-client-error-code';
+import { PrismaClientErrorCode } from 'src/common/constants';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 
