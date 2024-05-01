@@ -14,12 +14,95 @@ datasource db {
 }
 
 model Users {
-  id         Int       @id @default(autoincrement())
+  id       Int     @id @unique @default(autoincrement())
+  email    String  @unique
+  password String
+  username String?
+  posts    Posts[]
+  votes    Votes[]
+  Roles    Roles   @relation(fields: [role_id], references: [id])
+  role_id  Int     @default(3)
+
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   deleted_at DateTime?
-  email      String    @unique
-  password   String
-  username   String?
-  is_admin   Boolean   @default(false)
+}
+
+model Roles {
+  id    Int     @id @unique @default(autoincrement())
+  name  String  @unique
+  users Users[]
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+}
+
+model Posts {
+  id          Int            @id @unique @default(autoincrement())
+  title       String         @unique
+  description String
+  comments    PostComments[]
+  tags        PostsTags[]
+  votes       Votes[]
+  Users       Users          @relation(fields: [user_id], references: [id])
+  user_id     Int
+
+  created_at DateTime  @default(now()) //post_date
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+}
+
+model PostComments {
+  id      Int     @id @unique @default(autoincrement())
+  content String
+  votes   Votes[]
+  Posts   Posts   @relation(fields: [post_id], references: [id])
+  post_id Int
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+}
+
+model Tags {
+  id          Int         @id @unique @default(autoincrement())
+  name        String      @unique
+  description String
+  posts       PostsTags[]
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+}
+
+model PostsTags {
+  Posts   Posts @relation(fields: [post_id], references: [id])
+  post_id Int
+  Tags    Tags  @relation(fields: [tag_id], references: [id])
+  tag_id  Int
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+
+  @@id([post_id, tag_id])
+}
+
+model Votes {
+  id              Int           @id @unique @default(autoincrement())
+  is_upvoted      Boolean
+  Users           Users         @relation(fields: [user_id], references: [id])
+  user_id         Int
+  Posts           Posts?        @relation(fields: [post_id], references: [id])
+  post_id         Int?
+  PostComments    PostComments? @relation(fields: [post_comment_id], references: [id])
+  post_comment_id Int?
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+
+  @@unique([user_id, post_id])
+  @@unique([user_id, post_comment_id])
 }

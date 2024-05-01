@@ -1,7 +1,41 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { randomIntegerFromRange } from '../common/utils';
 
 const prisma = new PrismaClient();
+
+async function seedRoles() {
+  const rolesData = [];
+
+  const admin = await prisma.roles.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      name: 'Admin',
+    },
+  });
+  rolesData.push(admin);
+
+  const mod = await prisma.roles.upsert({
+    where: { id: 2 },
+    update: {},
+    create: {
+      name: 'Moderator',
+    },
+  });
+  rolesData.push(mod);
+
+  const user = await prisma.roles.upsert({
+    where: { id: 3 },
+    update: {},
+    create: {
+      name: 'User',
+    },
+  });
+  rolesData.push(user);
+
+  console.log(rolesData);
+}
 
 async function seedUsers() {
   const usersData = [];
@@ -13,7 +47,7 @@ async function seedUsers() {
       email: `admin@gmail.com`,
       username: `admin`,
       password: await bcrypt.hash('Aa@123456', 10),
-      is_admin: true,
+      role_id: 1,
     },
   });
   usersData.push(admin);
@@ -26,6 +60,7 @@ async function seedUsers() {
         email: `test${i}@gmail.com`,
         username: `test${i}`,
         password: await bcrypt.hash('Aa@123456', 10),
+        role_id: await randomIntegerFromRange(2, 3),
       },
     });
     usersData.push(user);
@@ -35,6 +70,7 @@ async function seedUsers() {
 }
 
 async function main() {
+  await seedRoles();
   await seedUsers();
 }
 
