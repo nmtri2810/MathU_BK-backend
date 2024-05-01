@@ -29,5 +29,5 @@ export class User implements Users {
   username: string;
 
   @ApiProperty()
-  is_admin: boolean;
+  role_id: number;
 }
