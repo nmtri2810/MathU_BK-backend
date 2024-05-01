@@ -19,8 +19,8 @@ async function bootstrap() {
   app.useLogger(new LoggerService());
 
   const config = new DocumentBuilder()
-    .setTitle('Data thieves')
-    .setDescription('Data thieves API description')
+    .setTitle('MathU_BK ')
+    .setDescription('MathU_BK API description')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
