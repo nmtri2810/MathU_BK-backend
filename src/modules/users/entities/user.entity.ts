@@ -30,4 +30,6 @@ export class User implements Users {
 
   @ApiProperty()
   role_id: number;
+
+  refresh_token: string;
 }
