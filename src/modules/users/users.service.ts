@@ -22,7 +22,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
-      createUserDto.password = await this.hashPassword(createUserDto.password);
+      createUserDto.password = await this.hashData(createUserDto.password);
       return await this.prisma.users.create({ data: createUserDto });
     } catch (error) {
       if (
@@ -35,7 +35,13 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return await this.prisma.users.findMany();
+    return await this.prisma.users.findMany({
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
   }
 
   async findOne(id: number): Promise<User> {
@@ -46,12 +52,14 @@ export class UsersService {
     return user;
   }
 
+  async findOneByEmail(email: string): Promise<User> {
+    return await this.prisma.users.findUnique({ where: { email } });
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     try {
       if (updateUserDto.password) {
-        updateUserDto.password = await this.hashPassword(
-          updateUserDto.password,
-        );
+        updateUserDto.password = await this.hashData(updateUserDto.password);
       }
 
       return await this.prisma.users.update({
@@ -83,9 +91,24 @@ export class UsersService {
     }
   }
 
-  async hashPassword(password: string): Promise<string> {
+  async hashData(data: string): Promise<string> {
     const saltRounds = this.configService.get<number>('auth.bcrypt.saltRounds');
     const salt = await bcrypt.genSalt(saltRounds);
-    return await bcrypt.hash(password, salt);
+    return await bcrypt.hash(data, salt);
+  }
+
+  async updateRefreshTokenInDB(
+    userId: number,
+    refreshToken: string,
+  ): Promise<User> {
+    let hashedRefreshToken: string;
+    if (refreshToken) {
+      hashedRefreshToken = await this.hashData(refreshToken);
+    }
+
+    return await this.prisma.users.update({
+      where: { id: userId },
+      data: { refresh_token: hashedRefreshToken },
+    });
   }
 }

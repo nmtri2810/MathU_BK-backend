@@ -20,16 +20,19 @@ import {
 } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { CustomParseIntPipe } from 'src/common/pipes/custom-parse-int.pipe';
-import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { AccessTokenGuard } from 'src/common/guard/accessToken.guard';
+import { ResponseMessage } from 'src/common/decorators/response.decorator';
+import { ResponseMessages } from 'src/common/constants';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AccessTokenGuard)
 @ApiBearerAuth()
 @ApiTags('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @ResponseMessage(ResponseMessages.CREATE_USER_SUCCESSFULLY)
   @ApiBody({
     type: CreateUserDto,
     examples: {
@@ -59,12 +62,14 @@ export class UsersController {
   }
 
   @Get(':id')
+  @ResponseMessage(ResponseMessages.GET_USER_SUCCESSFULLY)
   @ApiOkResponse({ type: User, description: 'Get user successfully' })
   async findOne(@Param('id', CustomParseIntPipe) id: number) {
     return new User(await this.usersService.findOne(id));
   }
 
   @Patch(':id')
+  @ResponseMessage(ResponseMessages.UPDATE_USER_SUCCESSFULLY)
   @ApiBody({
     type: CreateUserDto,
     examples: {
@@ -86,6 +91,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @ResponseMessage(ResponseMessages.DELETE_USER_SUCCESSFULLY)
   @ApiOkResponse({ type: User, description: 'Delete user successfully' })
   async remove(@Param('id', CustomParseIntPipe) id: number) {
     return new User(await this.usersService.remove(id));

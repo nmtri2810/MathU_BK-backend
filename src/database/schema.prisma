@@ -14,14 +14,15 @@ datasource db {
 }
 
 model Users {
-  id       Int     @id @unique @default(autoincrement())
-  email    String  @unique
-  password String
-  username String?
-  posts    Posts[]
-  votes    Votes[]
-  Roles    Roles   @relation(fields: [role_id], references: [id])
-  role_id  Int     @default(3)
+  id            Int     @id @unique @default(autoincrement())
+  email         String  @unique
+  password      String
+  username      String?
+  refresh_token String?
+  posts         Posts[]
+  votes         Votes[]
+  Roles         Roles   @relation(fields: [role_id], references: [id])
+  role_id       Int     @default(3)
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
