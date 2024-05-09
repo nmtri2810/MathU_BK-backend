@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Auth, Tokens } from './entity/auth.entity';
-import { ResponseMessages } from 'src/common/constants';
+import { ResponseMessages } from 'src/constants';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';

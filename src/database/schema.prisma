@@ -21,7 +21,7 @@ model Users {
   refresh_token String?
   posts         Posts[]
   votes         Votes[]
-  Roles         Roles   @relation(fields: [role_id], references: [id])
+  role          Roles   @relation(fields: [role_id], references: [id])
   role_id       Int     @default(3)
 
   created_at DateTime  @default(now())
@@ -46,7 +46,7 @@ model Posts {
   comments    PostComments[]
   tags        PostsTags[]
   votes       Votes[]
-  Users       Users          @relation(fields: [user_id], references: [id])
+  user        Users          @relation(fields: [user_id], references: [id])
   user_id     Int
 
   created_at DateTime  @default(now()) //post_date
@@ -58,7 +58,7 @@ model PostComments {
   id      Int     @id @unique @default(autoincrement())
   content String
   votes   Votes[]
-  Posts   Posts   @relation(fields: [post_id], references: [id])
+  post    Posts   @relation(fields: [post_id], references: [id])
   post_id Int
 
   created_at DateTime  @default(now())
@@ -78,9 +78,9 @@ model Tags {
 }
 
 model PostsTags {
-  Posts   Posts @relation(fields: [post_id], references: [id])
+  post    Posts @relation(fields: [post_id], references: [id])
   post_id Int
-  Tags    Tags  @relation(fields: [tag_id], references: [id])
+  tag     Tags  @relation(fields: [tag_id], references: [id])
   tag_id  Int
 
   created_at DateTime  @default(now())
@@ -93,11 +93,11 @@ model PostsTags {
 model Votes {
   id              Int           @id @unique @default(autoincrement())
   is_upvoted      Boolean
-  Users           Users         @relation(fields: [user_id], references: [id])
+  user            Users         @relation(fields: [user_id], references: [id])
   user_id         Int
-  Posts           Posts?        @relation(fields: [post_id], references: [id])
+  post            Posts?        @relation(fields: [post_id], references: [id])
   post_id         Int?
-  PostComments    PostComments? @relation(fields: [post_comment_id], references: [id])
+  post_comment    PostComments? @relation(fields: [post_comment_id], references: [id])
   post_comment_id Int?
 
   created_at DateTime  @default(now())

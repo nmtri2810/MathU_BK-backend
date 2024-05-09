@@ -22,7 +22,7 @@ import { User } from './entities/user.entity';
 import { CustomParseIntPipe } from 'src/common/pipes/custom-parse-int.pipe';
 import { AccessTokenGuard } from 'src/common/guard/accessToken.guard';
 import { ResponseMessage } from 'src/common/decorators/response.decorator';
-import { ResponseMessages } from 'src/common/constants';
+import { ResponseMessages } from 'src/constants';
 
 @Controller('users')
 @UseGuards(AccessTokenGuard)

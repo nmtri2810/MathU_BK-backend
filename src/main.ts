@@ -19,6 +19,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.useGlobalInterceptors(new ResponseInterceptor(new Reflector()));
   app.useLogger(new LoggerService());
+  app.enableCors();
 
   const config = new DocumentBuilder()
     .setTitle('MathU_BK ')
