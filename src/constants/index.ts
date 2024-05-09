@@ -20,3 +20,9 @@ export const ResponseMessages = {
   UPDATE_USER_SUCCESSFULLY: 'Update user successfully',
   DELETE_USER_SUCCESSFULLY: 'Delete user successfully',
 };
+
+export enum Role {
+  ADMIN = 1,
+  MODERATOR = 2,
+  USER = 3,
+}

@@ -6,10 +6,10 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'nestjs-prisma';
-import { ResponseMessages } from 'src/common/constants';
+import { ResponseMessages } from 'src/constants';
 import { Prisma } from '@prisma/client';
 import { User } from './entities/user.entity';
-import { PrismaClientErrorCode } from 'src/common/constants';
+import { PrismaClientErrorCode } from 'src/constants';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 
@@ -41,11 +41,15 @@ export class UsersService {
           id: 'asc',
         },
       ],
+      include: { role: true },
     });
   }
 
   async findOne(id: number): Promise<User> {
-    const user = await this.prisma.users.findUnique({ where: { id } });
+    const user = await this.prisma.users.findUnique({
+      where: { id },
+      include: { role: true },
+    });
 
     if (!user) throw new NotFoundException(ResponseMessages.USER_NOT_FOUND);
 
@@ -53,7 +57,10 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string): Promise<User> {
-    return await this.prisma.users.findUnique({ where: { email } });
+    return await this.prisma.users.findUnique({
+      where: { email },
+      include: { role: true },
+    });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
