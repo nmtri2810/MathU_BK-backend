@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Auth, Tokens } from './entity/auth.entity';
-import { ResponseMessages } from 'src/constants';
+import { DynamicMessage, Messages } from 'src/constants';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
@@ -23,11 +23,11 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<Auth> {
     const user = await this.usersService.findOneByEmail(email);
-    if (!user) throw new NotFoundException(ResponseMessages.USER_NOT_FOUND);
+    if (!user) throw new NotFoundException(DynamicMessage.notFound('User'));
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid)
-      throw new UnauthorizedException(ResponseMessages.INVALID_PASSWORD);
+      throw new UnauthorizedException(DynamicMessage.invalid('password'));
 
     const tokens = await this.getTokens(user.id);
 
@@ -50,7 +50,7 @@ export class AuthService {
       createUserDto.email,
     );
     if (userExists)
-      throw new BadRequestException(ResponseMessages.USER_ALREADY_EXIST);
+      throw new BadRequestException(DynamicMessage.duplicate('User'));
 
     const user = await this.usersService.create(createUserDto);
 
@@ -77,14 +77,14 @@ export class AuthService {
   async refresh(userId: number, refreshToken: string): Promise<Tokens> {
     const user = await this.usersService.findOne(userId);
     if (!user.refresh_token)
-      throw new ForbiddenException(ResponseMessages.ACCESS_DENIED);
+      throw new ForbiddenException(Messages.ACCESS_DENIED);
 
     const refreshTokenMatches = await bcrypt.compare(
       refreshToken,
       user.refresh_token,
     );
     if (!refreshTokenMatches)
-      throw new ForbiddenException(ResponseMessages.ACCESS_DENIED);
+      throw new ForbiddenException(Messages.ACCESS_DENIED);
 
     const tokens = await this.getTokens(user.id);
 

@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './config/environments/configuration';
 import { LoggerMiddleware } from './config/logger/logger.middleware';
 import { LoggerModule } from './config/logger/logger.module';
+import { PostsModule } from './modules/posts/posts.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { LoggerModule } from './config/logger/logger.module';
       load: [configuration],
     }),
     LoggerModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

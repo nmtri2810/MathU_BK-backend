@@ -4,21 +4,21 @@ export const PrismaClientErrorCode = {
   NOT_FOUND: 'P2025',
 };
 
-export const ResponseMessages = {
+export const Messages = {
   ACCESS_DENIED: 'Access Denied',
+};
 
-  EMAIL_DUPLICATED: 'Email already exists',
-  INVALID_PASSWORD: 'Invalid password',
-  LOGIN_SUCCESS: 'Login successful',
-  REGISTER_SUCCESS: 'Register successful',
-  LOGOUT_SUCCESS: 'Logout successful',
-
-  USER_NOT_FOUND: 'User not found',
-  USER_ALREADY_EXIST: 'User already exists',
-  CREATE_USER_SUCCESSFULLY: 'Create user successfully',
-  GET_USER_SUCCESSFULLY: 'Get user successfully',
-  UPDATE_USER_SUCCESSFULLY: 'Update user successfully',
-  DELETE_USER_SUCCESSFULLY: 'Delete user successfully',
+export const DynamicMessage = {
+  CRUD: {
+    createSuccess: (field: string) => `Create ${field} successfully`,
+    getSuccess: (field: string) => `Get ${field} successfully`,
+    updateSuccess: (field: string) => `Update ${field} successfully`,
+    deleteSuccess: (field: string) => `Delete ${field} successfully`,
+  },
+  actionSuccess: (field: string) => `${field} successful`,
+  duplicate: (field: string) => `${field} already exists`,
+  invalid: (field: string) => `Invalid ${field}`,
+  notFound: (field: string) => `${field} not found`,
 };
 
 export enum Role {

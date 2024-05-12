@@ -6,7 +6,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'nestjs-prisma';
-import { ResponseMessages } from 'src/constants';
+import { DynamicMessage } from 'src/constants';
 import { Prisma } from '@prisma/client';
 import { User } from './entities/user.entity';
 import { PrismaClientErrorCode } from 'src/constants';
@@ -23,13 +23,16 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       createUserDto.password = await this.hashData(createUserDto.password);
-      return await this.prisma.users.create({ data: createUserDto });
+      return await this.prisma.users.create({
+        data: createUserDto,
+        include: { role: true },
+      });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === PrismaClientErrorCode.CONFLICT
       ) {
-        throw new ConflictException(ResponseMessages.EMAIL_DUPLICATED);
+        throw new ConflictException(DynamicMessage.duplicate('Email'));
       }
     }
   }
@@ -38,7 +41,7 @@ export class UsersService {
     return await this.prisma.users.findMany({
       orderBy: [
         {
-          id: 'asc',
+          created_at: 'desc',
         },
       ],
       include: { role: true },
@@ -51,7 +54,7 @@ export class UsersService {
       include: { role: true },
     });
 
-    if (!user) throw new NotFoundException(ResponseMessages.USER_NOT_FOUND);
+    if (!user) throw new NotFoundException(DynamicMessage.notFound('User'));
 
     return user;
   }
@@ -72,14 +75,15 @@ export class UsersService {
       return await this.prisma.users.update({
         where: { id },
         data: updateUserDto,
+        include: { role: true },
       });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         const errorCode = error.code;
         if (errorCode === PrismaClientErrorCode.NOT_FOUND) {
-          throw new NotFoundException(ResponseMessages.USER_NOT_FOUND);
+          throw new NotFoundException(DynamicMessage.notFound('User'));
         } else if (errorCode === PrismaClientErrorCode.CONFLICT) {
-          throw new ConflictException(ResponseMessages.EMAIL_DUPLICATED);
+          throw new ConflictException(DynamicMessage.duplicate('Email'));
         }
       }
     }
@@ -87,13 +91,16 @@ export class UsersService {
 
   async remove(id: number): Promise<User> {
     try {
-      return await this.prisma.users.delete({ where: { id } });
+      return await this.prisma.users.delete({
+        where: { id },
+        include: { role: true },
+      });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === PrismaClientErrorCode.NOT_FOUND
       ) {
-        throw new NotFoundException(ResponseMessages.USER_NOT_FOUND);
+        throw new NotFoundException(DynamicMessage.notFound('User'));
       }
     }
   }
