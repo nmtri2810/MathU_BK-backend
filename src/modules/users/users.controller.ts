@@ -22,7 +22,7 @@ import { User } from './entities/user.entity';
 import { CustomParseIntPipe } from 'src/common/pipes/custom-parse-int.pipe';
 import { AccessTokenGuard } from 'src/common/guard/accessToken.guard';
 import { ResponseMessage } from 'src/common/decorators/response.decorator';
-import { ResponseMessages } from 'src/constants';
+import { DynamicMessage } from 'src/constants';
 
 @Controller('users')
 @UseGuards(AccessTokenGuard)
@@ -32,7 +32,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @ResponseMessage(ResponseMessages.CREATE_USER_SUCCESSFULLY)
+  @ResponseMessage(DynamicMessage.CRUD.createSuccess('user'))
   @ApiBody({
     type: CreateUserDto,
     examples: {
@@ -45,7 +45,10 @@ export class UsersController {
       },
     },
   })
-  @ApiCreatedResponse({ type: User, description: 'User created successfully' })
+  @ApiCreatedResponse({
+    type: User,
+    description: DynamicMessage.CRUD.createSuccess('user'),
+  })
   async create(@Body() createUserDto: CreateUserDto) {
     return new User(await this.usersService.create(createUserDto));
   }
@@ -54,7 +57,7 @@ export class UsersController {
   @ApiOkResponse({
     type: User,
     isArray: true,
-    description: 'Get user list successfully',
+    description: DynamicMessage.CRUD.getSuccess('user list'),
   })
   async findAll() {
     const users = await this.usersService.findAll();
@@ -62,16 +65,19 @@ export class UsersController {
   }
 
   @Get(':id')
-  @ResponseMessage(ResponseMessages.GET_USER_SUCCESSFULLY)
-  @ApiOkResponse({ type: User, description: 'Get user successfully' })
+  @ResponseMessage(DynamicMessage.CRUD.getSuccess('user'))
+  @ApiOkResponse({
+    type: User,
+    description: DynamicMessage.CRUD.getSuccess('user'),
+  })
   async findOne(@Param('id', CustomParseIntPipe) id: number) {
     return new User(await this.usersService.findOne(id));
   }
 
   @Patch(':id')
-  @ResponseMessage(ResponseMessages.UPDATE_USER_SUCCESSFULLY)
+  @ResponseMessage(DynamicMessage.CRUD.updateSuccess('user'))
   @ApiBody({
-    type: CreateUserDto,
+    type: UpdateUserDto,
     examples: {
       user1: {
         value: {
@@ -82,7 +88,10 @@ export class UsersController {
       },
     },
   })
-  @ApiOkResponse({ type: User, description: 'Update user successfully' })
+  @ApiOkResponse({
+    type: User,
+    description: DynamicMessage.CRUD.updateSuccess('user'),
+  })
   async update(
     @Param('id', CustomParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -91,8 +100,11 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @ResponseMessage(ResponseMessages.DELETE_USER_SUCCESSFULLY)
-  @ApiOkResponse({ type: User, description: 'Delete user successfully' })
+  @ResponseMessage(DynamicMessage.CRUD.deleteSuccess('user'))
+  @ApiOkResponse({
+    type: User,
+    description: DynamicMessage.CRUD.deleteSuccess('user'),
+  })
   async remove(@Param('id', CustomParseIntPipe) id: number) {
     return new User(await this.usersService.remove(id));
   }

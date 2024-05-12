@@ -31,5 +31,6 @@ export class User implements Users {
   @ApiProperty()
   role_id: number;
 
+  @Exclude()
   refresh_token: string;
 }

@@ -9,7 +9,7 @@ import {
 import { Auth } from './entity/auth.entity';
 import { LoginDto } from './dto/login.dto';
 import { ResponseMessage } from 'src/common/decorators/response.decorator';
-import { ResponseMessages } from 'src/constants';
+import { DynamicMessage } from 'src/constants';
 import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
 import { Request } from 'express';
 import { AccessTokenGuard } from 'src/common/guard/accessToken.guard';
@@ -21,7 +21,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
-  @ResponseMessage(ResponseMessages.LOGIN_SUCCESS)
+  @ResponseMessage(DynamicMessage.actionSuccess('Login'))
   @ApiBody({
     type: LoginDto,
     examples: {
@@ -39,7 +39,7 @@ export class AuthController {
   }
 
   @Post('register')
-  @ResponseMessage(ResponseMessages.REGISTER_SUCCESS)
+  @ResponseMessage(DynamicMessage.actionSuccess('Register'))
   @ApiBody({
     type: CreateUserDto,
     examples: {
@@ -58,7 +58,7 @@ export class AuthController {
   }
 
   @Get('logout')
-  @ResponseMessage(ResponseMessages.LOGOUT_SUCCESS)
+  @ResponseMessage(DynamicMessage.actionSuccess('Logout'))
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   async logout(@Req() req: Request) {
