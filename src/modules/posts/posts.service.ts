@@ -28,7 +28,6 @@ export class PostsService {
         });
     } catch (error) {
       if (error instanceof NotFoundException) {
-        console.log('src_modules_posts_posts.service.ts#31: ', error);
         throw new NotFoundException(DynamicMessage.notFound('User'));
       }
       if (

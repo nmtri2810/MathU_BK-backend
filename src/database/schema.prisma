@@ -14,15 +14,16 @@ datasource db {
 }
 
 model Users {
-  id            Int     @id @unique @default(autoincrement())
-  email         String  @unique
+  id            Int        @id @unique @default(autoincrement())
+  email         String     @unique
   password      String
   username      String?
   refresh_token String?
   posts         Posts[]
   votes         Votes[]
-  role          Roles   @relation(fields: [role_id], references: [id])
-  role_id       Int     @default(3)
+  comments      Comments[]
+  role          Roles      @relation(fields: [role_id], references: [id])
+  role_id       Int        @default(3)
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
@@ -40,13 +41,13 @@ model Roles {
 }
 
 model Posts {
-  id          Int            @id @unique @default(autoincrement())
-  title       String         @unique
+  id          Int         @id @unique @default(autoincrement())
+  title       String      @unique
   description String
-  comments    PostComments[]
+  comments    Comments[]
   tags        PostsTags[]
   votes       Votes[]
-  user        Users          @relation(fields: [user_id], references: [id])
+  user        Users       @relation(fields: [user_id], references: [id])
   user_id     Int
 
   created_at DateTime  @default(now()) //post_date
@@ -54,12 +55,14 @@ model Posts {
   deleted_at DateTime?
 }
 
-model PostComments {
+model Comments {
   id      Int     @id @unique @default(autoincrement())
   content String
   votes   Votes[]
   post    Posts   @relation(fields: [post_id], references: [id])
   post_id Int
+  user    Users   @relation(fields: [user_id], references: [id])
+  user_id Int
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
@@ -91,19 +94,19 @@ model PostsTags {
 }
 
 model Votes {
-  id              Int           @id @unique @default(autoincrement())
-  is_upvoted      Boolean
-  user            Users         @relation(fields: [user_id], references: [id])
-  user_id         Int
-  post            Posts?        @relation(fields: [post_id], references: [id])
-  post_id         Int?
-  post_comment    PostComments? @relation(fields: [post_comment_id], references: [id])
-  post_comment_id Int?
+  id         Int       @id @unique @default(autoincrement())
+  is_upvoted Boolean
+  user       Users     @relation(fields: [user_id], references: [id])
+  user_id    Int
+  post       Posts?    @relation(fields: [post_id], references: [id])
+  post_id    Int?
+  comment    Comments? @relation(fields: [comment_id], references: [id])
+  comment_id Int?
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   deleted_at DateTime?
 
   @@unique([user_id, post_id])
-  @@unique([user_id, post_comment_id])
+  @@unique([user_id, comment_id])
 }
