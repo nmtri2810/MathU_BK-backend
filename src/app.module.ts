@@ -8,6 +8,7 @@ import configuration from './config/environments/configuration';
 import { LoggerMiddleware } from './config/logger/logger.middleware';
 import { LoggerModule } from './config/logger/logger.module';
 import { PostsModule } from './modules/posts/posts.module';
+import { CommentsModule } from './modules/comments/comments.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PostsModule } from './modules/posts/posts.module';
     }),
     LoggerModule,
     PostsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
