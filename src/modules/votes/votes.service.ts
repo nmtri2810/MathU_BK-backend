@@ -1,19 +1,13 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateVoteDto } from './dto/create-vote.dto';
 import { UpdateVoteDto } from './dto/update-vote.dto';
 import { PrismaService } from 'nestjs-prisma';
 import { UsersService } from '../users/users.service';
 import { PostsService } from '../posts/posts.service';
 import { CommentsService } from '../comments/comments.service';
-import { DynamicMessage, PrismaClientErrorCode } from 'src/constants';
+import { DynamicMessage } from 'src/constants';
 import { Vote } from './entities/vote.entity';
-import { LikeableTypes, Prisma } from '@prisma/client';
-import { Post } from '../posts/entities/post.entity';
-import { Comment } from '../comments/entities/comment.entity';
+import { VoteableTypes } from '@prisma/client';
 
 @Injectable()
 export class VotesService {
@@ -25,47 +19,15 @@ export class VotesService {
   ) {}
 
   async create(createVoteDto: CreateVoteDto): Promise<Vote> {
-    try {
-      const userExist = await this.usersService.findOne(createVoteDto.user_id);
+    const userExist = await this.usersService.findOne(createVoteDto.user_id);
 
-      if (userExist) {
-        let likeableItem: Post | Comment;
+    if (userExist) {
+      const service = await this.getServiceByTypes(createVoteDto.voteable_type);
 
-        if (createVoteDto.likeable_type === LikeableTypes.POST) {
-          likeableItem = await this.postsService.findOne(
-            createVoteDto.likeable_id,
-          );
-        } else if (createVoteDto.likeable_type === LikeableTypes.COMMENT) {
-          likeableItem = await this.commentsService.findOne(
-            createVoteDto.likeable_id,
-          );
-        } else {
-          throw new NotFoundException();
-        }
+      const likedItem = await service.findOne(createVoteDto.voteable_id);
 
-        if (likeableItem)
-          return await this.prisma.votes.create({ data: createVoteDto });
-      }
-    } catch (error) {
-      console.log('src_modules_votes_votes.service.ts#50: ', error);
-      if (error instanceof NotFoundException) {
-        if (error.message.includes('User')) {
-          throw new NotFoundException(DynamicMessage.notFound('User'));
-        } else if (error.message.includes('Post')) {
-          throw new NotFoundException(DynamicMessage.notFound('Post'));
-        } else if (error.message.includes('Comment')) {
-          throw new NotFoundException(DynamicMessage.notFound('Comment'));
-        } else {
-          throw new NotFoundException(DynamicMessage.notFound('Type'));
-        }
-      } else if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === PrismaClientErrorCode.CONFLICT
-      ) {
-        throw new ConflictException(DynamicMessage.invalid('vote action'));
-      } else {
-        throw error;
-      }
+      if (likedItem)
+        return await this.prisma.votes.create({ data: createVoteDto });
     }
   }
 
@@ -80,43 +42,31 @@ export class VotesService {
   }
 
   async findOne(id: number): Promise<Vote> {
-    const vote = await this.prisma.votes.findUnique({
+    return await this.prisma.votes.findUniqueOrThrow({
       where: { id },
     });
-
-    if (!vote) throw new NotFoundException(DynamicMessage.notFound('Vote'));
-
-    return vote;
   }
 
   async update(id: number, updateVoteDto: UpdateVoteDto): Promise<Vote> {
-    try {
-      return await this.prisma.votes.update({
-        where: { id },
-        data: updateVoteDto,
-      });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        const errorCode = error.code;
-        if (errorCode === PrismaClientErrorCode.NOT_FOUND) {
-          throw new NotFoundException(DynamicMessage.notFound('Vote'));
-        }
-      }
-    }
+    return await this.prisma.votes.update({
+      where: { id },
+      data: updateVoteDto,
+    });
   }
 
   async remove(id: number): Promise<Vote> {
-    try {
-      return await this.prisma.votes.delete({
-        where: { id },
-      });
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === PrismaClientErrorCode.NOT_FOUND
-      ) {
-        throw new NotFoundException(DynamicMessage.notFound('Vote'));
-      }
-    }
+    return await this.prisma.votes.delete({ where: { id } });
+  }
+
+  async getServiceByTypes(type: string) {
+    const servicesMap = {
+      [VoteableTypes.POST]: this.postsService,
+      [VoteableTypes.COMMENT]: this.commentsService,
+    };
+
+    if (!servicesMap[type])
+      throw new NotFoundException(DynamicMessage.notFound('Type'));
+
+    return servicesMap[type];
   }
 }

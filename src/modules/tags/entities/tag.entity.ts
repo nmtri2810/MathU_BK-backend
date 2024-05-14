@@ -1,21 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { VoteableTypes, Votes } from '@prisma/client';
+import { Tags } from '@prisma/client';
 
-export class Vote implements Votes {
+export class Tag implements Tags {
   @ApiProperty()
   id: number;
 
   @ApiProperty()
-  is_upvoted: boolean;
+  name: string;
 
   @ApiProperty()
-  user_id: number;
-
-  @ApiProperty()
-  voteable_id: number;
-
-  @ApiProperty()
-  voteable_type: VoteableTypes;
+  description: string;
 
   @ApiProperty()
   created_at: Date;

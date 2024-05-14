@@ -46,7 +46,7 @@ model Posts {
   description String
   comments    Comments[]
   tags        PostsTags[]
-  votes       Votes[]     @relation("post_like")
+  votes       Votes[]     @relation("post_vote")
   user        Users       @relation(fields: [user_id], references: [id])
   user_id     Int
 
@@ -58,7 +58,7 @@ model Posts {
 model Comments {
   id      Int     @id @unique @default(autoincrement())
   content String
-  votes   Votes[] @relation("comment_like")
+  votes   Votes[] @relation("comment_vote")
   post    Posts   @relation(fields: [post_id], references: [id])
   post_id Int
   user    Users   @relation(fields: [user_id], references: [id])
@@ -98,20 +98,20 @@ model Votes {
   is_upvoted    Boolean
   user          Users         @relation(fields: [user_id], references: [id])
   user_id       Int
-  post          Posts?        @relation("post_like", fields: [likeable_id], references: [id], map: "post_likeable_id")
-  comment       Comments?     @relation("comment_like", fields: [likeable_id], references: [id], map: "comment_likeable_id")
-  likeable_id   Int
-  likeable_type LikeableTypes
+  post          Posts?        @relation("post_vote", fields: [voteable_id], references: [id], map: "post_voteable_id")
+  comment       Comments?     @relation("comment_vote", fields: [voteable_id], references: [id], map: "comment_voteable_id")
+  voteable_id   Int
+  voteable_type VoteableTypes
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   deleted_at DateTime?
 
-  @@unique([user_id, likeable_id, likeable_type])
+  @@unique([user_id, voteable_id, voteable_type])
 }
 
 // FUCKING STUPID PRISMA NO ENUM SETUP VALUE
-enum LikeableTypes {
+enum VoteableTypes {
   POST
   COMMENT
 }

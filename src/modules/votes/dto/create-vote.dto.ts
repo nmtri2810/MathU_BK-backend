@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LikeableTypes } from '@prisma/client';
+import { VoteableTypes } from '@prisma/client';
 import { IsNotEmpty } from 'class-validator';
 
 export class CreateVoteDto {
@@ -13,9 +13,9 @@ export class CreateVoteDto {
 
   @IsNotEmpty()
   @ApiProperty()
-  likeable_id: number;
+  voteable_id: number;
 
   @IsNotEmpty()
   @ApiProperty()
-  likeable_type: LikeableTypes;
+  voteable_type: VoteableTypes;
 }
