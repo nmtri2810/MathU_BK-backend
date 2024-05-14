@@ -12,8 +12,8 @@ import { ResponseMessage } from 'src/common/decorators/response.decorator';
 import { DynamicMessage } from 'src/constants';
 import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
 import { Request } from 'express';
-import { AccessTokenGuard } from 'src/common/guard/accessToken.guard';
-import { RefreshTokenGuard } from 'src/common/guard/refreshToken.guard';
+import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
+import { RefreshTokenGuard } from 'src/common/guards/refreshToken.guard';
 
 @Controller('auth')
 @ApiTags('auth')

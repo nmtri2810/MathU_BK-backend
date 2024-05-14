@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { CustomParseIntPipe } from 'src/common/pipes/custom-parse-int.pipe';
-import { AccessTokenGuard } from 'src/common/guard/accessToken.guard';
+import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { ResponseMessage } from 'src/common/decorators/response.decorator';
 import { DynamicMessage } from 'src/constants';
 

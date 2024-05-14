@@ -9,7 +9,7 @@ export class CustomParseIntPipe implements PipeTransform<string, number> {
         'Validation failed (numeric string is expected)',
       );
     } else if (val < 0 || val > 2147483647) {
-      throw new BadRequestException('Invalid ID');
+      throw new BadRequestException('Invalid parameter');
     }
     return val;
   }

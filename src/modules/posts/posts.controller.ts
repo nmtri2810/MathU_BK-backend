@@ -11,7 +11,7 @@ import {
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { AccessTokenGuard } from 'src/common/guard/accessToken.guard';
+import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -87,7 +87,7 @@ export class PostsController {
     type: PostEntity,
     description: DynamicMessage.CRUD.deleteSuccess('post'),
   })
-  async remove(@Param('id') id: number) {
+  async remove(@Param('id', CustomParseIntPipe) id: number) {
     return await this.postsService.remove(id);
   }
 }
