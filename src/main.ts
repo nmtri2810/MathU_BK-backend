@@ -1,16 +1,12 @@
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import {
-  ClassSerializerInterceptor,
-  HttpStatus,
-  ValidationPipe,
-} from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LoggerService } from './config/logger/logger.service';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { HttpExceptionFilter } from './common/exception-filters/http-exception.filter';
-import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import { CustomPrismaClientExceptionFilter } from './common/exception-filters/prisma-client-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -28,13 +24,7 @@ async function bootstrap() {
   app.useLogger(new LoggerService());
   app.enableCors();
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.useGlobalFilters(
-    new PrismaClientExceptionFilter(httpAdapter, {
-      P2000: HttpStatus.BAD_REQUEST,
-      P2002: HttpStatus.CONFLICT,
-      P2025: HttpStatus.NOT_FOUND,
-    }),
-  );
+  app.useGlobalFilters(new CustomPrismaClientExceptionFilter(httpAdapter));
 
   const config = new DocumentBuilder()
     .setTitle('MathU_BK ')
