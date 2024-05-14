@@ -6,6 +6,7 @@ export const PrismaClientErrorCode = {
 
 export const Messages = {
   ACCESS_DENIED: 'Access Denied',
+  INTERNAL_SERVER_ERROR: 'Internal server error',
 };
 
 export const DynamicMessage = {
@@ -20,9 +21,3 @@ export const DynamicMessage = {
   invalid: (field: string) => `Invalid ${field}`,
   notFound: (field: string) => `${field} not found`,
 };
-
-export enum Role {
-  ADMIN = 1,
-  MODERATOR = 2,
-  USER = 3,
-}

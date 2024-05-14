@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { randomIntegerFromRange } from '../utils';
-import { Role } from '../constants/index';
+import { Role } from '../constants/enum';
 
 const prisma = new PrismaClient();
 

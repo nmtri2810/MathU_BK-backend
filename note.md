@@ -1,0 +1,4 @@
+- [ ] ID number siêu dài truyền vào -> lỗi Prisma & Postgres DB -> Sau thay bằng uuid
+- [ ] Soft delete
+- [ ] Pagination
+- [ ] Not found interceptor

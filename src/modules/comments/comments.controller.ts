@@ -11,7 +11,7 @@ import {
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { AccessTokenGuard } from 'src/common/guard/accessToken.guard';
+import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import {
   ApiBearerAuth,
   ApiBody,
