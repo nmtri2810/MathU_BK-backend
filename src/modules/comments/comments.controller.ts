@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -23,13 +24,21 @@ import { ResponseMessage } from 'src/common/decorators/response.decorator';
 import { DynamicMessage } from 'src/constants';
 import { Comment } from './entities/comment.entity';
 import { CustomParseIntPipe } from 'src/common/pipes/custom-parse-int.pipe';
+import { AbilitiesGuard } from 'src/common/guards/abilities.guard';
+import { CheckAbilites } from 'src/common/decorators/abilities.decorator';
+import { Action } from 'src/constants/enum';
+import { Request } from 'express';
+import { UsersService } from '../users/users.service';
 
 @Controller('comments')
-@UseGuards(AccessTokenGuard)
+@UseGuards(AccessTokenGuard, AbilitiesGuard)
 @ApiBearerAuth()
 @ApiTags('comments')
 export class CommentsController {
-  constructor(private readonly commentsService: CommentsService) {}
+  constructor(
+    private readonly commentsService: CommentsService,
+    private usersService: UsersService,
+  ) {}
 
   @Post()
   @ResponseMessage(DynamicMessage.CRUD.createSuccess('comment'))
@@ -40,6 +49,7 @@ export class CommentsController {
     type: Comment,
     description: DynamicMessage.CRUD.createSuccess('comment'),
   })
+  @CheckAbilites({ action: Action.Create, subject: Comment })
   async create(@Body() createCommentDto: CreateCommentDto) {
     return await this.commentsService.create(createCommentDto);
   }
@@ -51,6 +61,7 @@ export class CommentsController {
     isArray: true,
     description: DynamicMessage.CRUD.getSuccess('comment list'),
   })
+  @CheckAbilites({ action: Action.Read, subject: Comment })
   async findAll() {
     return await this.commentsService.findAll();
   }
@@ -61,6 +72,7 @@ export class CommentsController {
     type: Comment,
     description: DynamicMessage.CRUD.getSuccess('comment'),
   })
+  @CheckAbilites({ action: Action.Read, subject: Comment })
   async findOne(@Param('id', CustomParseIntPipe) id: number) {
     return await this.commentsService.findOne(id);
   }
@@ -74,11 +86,15 @@ export class CommentsController {
     type: Comment,
     description: DynamicMessage.CRUD.updateSuccess('comment'),
   })
+  @CheckAbilites({ action: Action.Update, subject: Comment })
   async update(
     @Param('id', CustomParseIntPipe) id: number,
     @Body() updateCommentDto: UpdateCommentDto,
+    @Req() req: Request,
   ) {
-    return await this.commentsService.update(id, updateCommentDto);
+    const currentUser = await this.usersService.findOne(req.user['userId']);
+
+    return await this.commentsService.update(id, updateCommentDto, currentUser);
   }
 
   @Delete(':id')
@@ -87,7 +103,13 @@ export class CommentsController {
     type: Comment,
     description: DynamicMessage.CRUD.deleteSuccess('comment'),
   })
-  async remove(@Param('id', CustomParseIntPipe) id: number) {
-    return await this.commentsService.remove(id);
+  @CheckAbilites({ action: Action.Delete, subject: Comment })
+  async remove(
+    @Param('id', CustomParseIntPipe) id: number,
+    @Req() req: Request,
+  ) {
+    const currentUser = await this.usersService.findOne(req.user['userId']);
+
+    return await this.commentsService.remove(id, currentUser);
   }
 }

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -23,16 +24,21 @@ import { ResponseMessage } from 'src/common/decorators/response.decorator';
 import { DynamicMessage } from 'src/constants';
 import { Post as PostEntity } from './entities/post.entity';
 import { CustomParseIntPipe } from 'src/common/pipes/custom-parse-int.pipe';
-import { AbilitiesGuard } from 'src/common/guards/abilities.guard';
 import { CheckAbilites } from 'src/common/decorators/abilities.decorator';
 import { Action } from 'src/constants/enum';
+import { Request } from 'express';
+import { UsersService } from '../users/users.service';
+import { AbilitiesGuard } from 'src/common/guards/abilities.guard';
 
 @Controller('posts')
-@UseGuards(AccessTokenGuard, AbilitiesGuard) //temp
+@UseGuards(AccessTokenGuard, AbilitiesGuard)
 @ApiBearerAuth()
 @ApiTags('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    private readonly postsService: PostsService,
+    private usersService: UsersService,
+  ) {}
 
   @Post()
   @ResponseMessage(DynamicMessage.CRUD.createSuccess('post'))
@@ -84,8 +90,11 @@ export class PostsController {
   async update(
     @Param('id', CustomParseIntPipe) id: number,
     @Body() updatePostDto: UpdatePostDto,
+    @Req() req: Request,
   ) {
-    return await this.postsService.update(id, updatePostDto);
+    const currentUser = await this.usersService.findOne(req.user['userId']);
+
+    return await this.postsService.update(id, updatePostDto, currentUser);
   }
 
   @Delete(':id')
@@ -95,7 +104,12 @@ export class PostsController {
     description: DynamicMessage.CRUD.deleteSuccess('post'),
   })
   @CheckAbilites({ action: Action.Delete, subject: PostEntity })
-  async remove(@Param('id', CustomParseIntPipe) id: number) {
-    return await this.postsService.remove(id);
+  async remove(
+    @Param('id', CustomParseIntPipe) id: number,
+    @Req() req: Request,
+  ) {
+    const currentUser = await this.usersService.findOne(req.user['userId']);
+
+    return await this.postsService.remove(id, currentUser);
   }
 }

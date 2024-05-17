@@ -8,6 +8,9 @@ import { CommentsService } from '../comments/comments.service';
 import { DynamicMessage } from 'src/constants';
 import { Vote } from './entities/vote.entity';
 import { VoteableTypes } from '@prisma/client';
+import { User } from '../users/entities/user.entity';
+import { CaslAbilityFactory } from 'src/casl/casl-ability.factory/casl-ability.factory';
+import { Action } from 'src/constants/enum';
 
 @Injectable()
 export class VotesService {
@@ -16,6 +19,7 @@ export class VotesService {
     private usersService: UsersService,
     private postsService: PostsService,
     private commentsService: CommentsService,
+    private caslAbility: CaslAbilityFactory,
   ) {}
 
   async create(createVoteDto: CreateVoteDto): Promise<Vote> {
@@ -47,14 +51,34 @@ export class VotesService {
     });
   }
 
-  async update(id: number, updateVoteDto: UpdateVoteDto): Promise<Vote> {
+  async update(
+    id: number,
+    updateVoteDto: UpdateVoteDto,
+    currentUser: User,
+  ): Promise<Vote> {
+    const voteToUpdate = await this.findOne(id);
+    await this.caslAbility.isSubjectForbidden(
+      currentUser,
+      Action.Update,
+      Vote,
+      voteToUpdate,
+    );
+
     return await this.prisma.votes.update({
       where: { id },
       data: updateVoteDto,
     });
   }
 
-  async remove(id: number): Promise<Vote> {
+  async remove(id: number, currentUser: User): Promise<Vote> {
+    const voteToDelete = await this.findOne(id);
+    await this.caslAbility.isSubjectForbidden(
+      currentUser,
+      Action.Delete,
+      Vote,
+      voteToDelete,
+    );
+
     return await this.prisma.votes.delete({ where: { id } });
   }
 

@@ -11,6 +11,7 @@ import { LoggerService } from './config/logger/logger.service';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { HttpExceptionFilter } from './common/exception-filters/http-exception.filter';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import { ForbiddenErrorFilter } from './common/exception-filters/forbidden-error.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -35,6 +36,7 @@ async function bootstrap() {
       P2025: HttpStatus.NOT_FOUND,
     }),
   );
+  app.useGlobalFilters(new ForbiddenErrorFilter());
 
   const config = new DocumentBuilder()
     .setTitle('MathU_BK ')

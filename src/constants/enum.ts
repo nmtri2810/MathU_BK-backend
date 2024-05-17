@@ -10,4 +10,5 @@ export enum Action {
   Read = 'read',
   Update = 'update',
   Delete = 'delete',
+  Modify_Itself = 'modify_itself',
 }
