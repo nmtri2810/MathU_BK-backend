@@ -23,9 +23,12 @@ import { ResponseMessage } from 'src/common/decorators/response.decorator';
 import { DynamicMessage } from 'src/constants';
 import { Post as PostEntity } from './entities/post.entity';
 import { CustomParseIntPipe } from 'src/common/pipes/custom-parse-int.pipe';
+import { AbilitiesGuard } from 'src/common/guards/abilities.guard';
+import { CheckAbilites } from 'src/common/decorators/abilities.decorator';
+import { Action } from 'src/constants/enum';
 
 @Controller('posts')
-@UseGuards(AccessTokenGuard)
+@UseGuards(AccessTokenGuard, AbilitiesGuard) //temp
 @ApiBearerAuth()
 @ApiTags('posts')
 export class PostsController {
@@ -40,6 +43,7 @@ export class PostsController {
     type: PostEntity,
     description: DynamicMessage.CRUD.createSuccess('post'),
   })
+  @CheckAbilites({ action: Action.Create, subject: PostEntity })
   async create(@Body() createPostDto: CreatePostDto) {
     return await this.postsService.create(createPostDto);
   }
@@ -51,6 +55,7 @@ export class PostsController {
     isArray: true,
     description: DynamicMessage.CRUD.getSuccess('post list'),
   })
+  @CheckAbilites({ action: Action.Read, subject: PostEntity })
   async findAll() {
     return await this.postsService.findAll();
   }
@@ -61,6 +66,7 @@ export class PostsController {
     type: PostEntity,
     description: DynamicMessage.CRUD.getSuccess('post'),
   })
+  @CheckAbilites({ action: Action.Read, subject: PostEntity })
   async findOne(@Param('id', CustomParseIntPipe) id: number) {
     return await this.postsService.findOne(id);
   }
@@ -74,6 +80,7 @@ export class PostsController {
     type: PostEntity,
     description: DynamicMessage.CRUD.updateSuccess('post'),
   })
+  @CheckAbilites({ action: Action.Update, subject: PostEntity })
   async update(
     @Param('id', CustomParseIntPipe) id: number,
     @Body() updatePostDto: UpdatePostDto,
@@ -87,6 +94,7 @@ export class PostsController {
     type: PostEntity,
     description: DynamicMessage.CRUD.deleteSuccess('post'),
   })
+  @CheckAbilites({ action: Action.Delete, subject: PostEntity })
   async remove(@Param('id', CustomParseIntPipe) id: number) {
     return await this.postsService.remove(id);
   }

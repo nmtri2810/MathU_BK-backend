@@ -11,6 +11,7 @@ import { PostsModule } from './modules/posts/posts.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { VotesModule } from './modules/votes/votes.module';
 import { TagsModule } from './modules/tags/tags.module';
+import { CaslModule } from './casl/casl.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { TagsModule } from './modules/tags/tags.module';
     CommentsModule,
     VotesModule,
     TagsModule,
+    CaslModule,
   ],
   controllers: [AppController],
   providers: [AppService],

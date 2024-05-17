@@ -14,70 +14,78 @@ datasource db {
 }
 
 model Users {
-  id            Int        @id @unique @default(autoincrement())
-  email         String     @unique
+  id            Int     @id @unique @default(autoincrement())
+  email         String  @unique
   password      String
   username      String?
   refresh_token String?
-  posts         Posts[]
-  votes         Votes[]
-  comments      Comments[]
-  role          Roles      @relation(fields: [role_id], references: [id])
-  role_id       Int        @default(3)
+
+  role    Roles @relation(fields: [role_id], references: [id])
+  role_id Int   @default(3)
+
+  posts    Posts[]
+  votes    Votes[]
+  comments Comments[]
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
-  deleted_at DateTime?
+  deleted_at DateTime? @db.Timestamp()
 }
 
 model Roles {
-  id    Int     @id @unique @default(autoincrement())
-  name  String  @unique
+  id   Int    @id @unique @default(autoincrement())
+  name String @unique
+
   users Users[]
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
-  deleted_at DateTime?
+  deleted_at DateTime? @db.Timestamp()
 }
 
 model Posts {
-  id          Int         @id @unique @default(autoincrement())
-  title       String      @unique
+  id          Int    @id @unique @default(autoincrement())
+  title       String @unique
   description String
-  comments    Comments[]
-  tags        PostsTags[]
-  votes       Votes[]     @relation("post_vote")
-  user        Users       @relation(fields: [user_id], references: [id])
-  user_id     Int
+
+  user    Users @relation(fields: [user_id], references: [id])
+  user_id Int
+
+  comments Comments[]
+  tags     PostsTags[]
+  votes    Votes[]     @relation("post_vote")
 
   created_at DateTime  @default(now()) //post_date
   updated_at DateTime? @updatedAt
-  deleted_at DateTime?
+  deleted_at DateTime? @db.Timestamp()
 }
 
 model Comments {
-  id      Int     @id @unique @default(autoincrement())
+  id      Int    @id @unique @default(autoincrement())
   content String
-  votes   Votes[] @relation("comment_vote")
-  post    Posts   @relation(fields: [post_id], references: [id])
+
+  post    Posts @relation(fields: [post_id], references: [id])
   post_id Int
-  user    Users   @relation(fields: [user_id], references: [id])
+  user    Users @relation(fields: [user_id], references: [id])
   user_id Int
+
+  votes Votes[] @relation("comment_vote")
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
-  deleted_at DateTime?
+  deleted_at DateTime? @db.Timestamp()
 }
 
 model Tags {
-  id          Int         @id @unique @default(autoincrement())
-  name        String      @unique
+  id          Int    @id @unique @default(autoincrement())
+  name        String @unique
   description String
-  posts       PostsTags[]
+
+  posts PostsTags[]
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
-  deleted_at DateTime?
+  deleted_at DateTime? @db.Timestamp()
 }
 
 model PostsTags {
@@ -88,14 +96,15 @@ model PostsTags {
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
-  deleted_at DateTime?
+  deleted_at DateTime? @db.Timestamp()
 
   @@id([post_id, tag_id])
 }
 
 model Votes {
-  id            Int           @id @unique @default(autoincrement())
-  is_upvoted    Boolean
+  id         Int     @id @unique @default(autoincrement())
+  is_upvoted Boolean
+
   user          Users         @relation(fields: [user_id], references: [id])
   user_id       Int
   post          Posts?        @relation("post_vote", fields: [voteable_id], references: [id], map: "post_voteable_id")
@@ -105,7 +114,7 @@ model Votes {
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
-  deleted_at DateTime?
+  deleted_at DateTime? @db.Timestamp()
 
   @@unique([user_id, voteable_id, voteable_type])
 }
