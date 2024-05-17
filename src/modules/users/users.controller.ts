@@ -23,9 +23,12 @@ import { CustomParseIntPipe } from 'src/common/pipes/custom-parse-int.pipe';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { ResponseMessage } from 'src/common/decorators/response.decorator';
 import { DynamicMessage } from 'src/constants';
+import { AbilitiesGuard } from 'src/common/guards/abilities.guard';
+import { CheckAbilites } from 'src/common/decorators/abilities.decorator';
+import { Action } from 'src/constants/enum';
 
 @Controller('users')
-@UseGuards(AccessTokenGuard)
+@UseGuards(AccessTokenGuard, AbilitiesGuard)
 @ApiBearerAuth()
 @ApiTags('users')
 export class UsersController {
@@ -49,6 +52,7 @@ export class UsersController {
     type: User,
     description: DynamicMessage.CRUD.createSuccess('user'),
   })
+  @CheckAbilites({ action: Action.Create, subject: User })
   async create(@Body() createUserDto: CreateUserDto) {
     return new User(await this.usersService.create(createUserDto));
   }
@@ -59,6 +63,7 @@ export class UsersController {
     isArray: true,
     description: DynamicMessage.CRUD.getSuccess('user list'),
   })
+  @CheckAbilites({ action: Action.Read, subject: User })
   async findAll() {
     const users = await this.usersService.findAll();
     return users.map((user) => new User(user));
@@ -70,6 +75,7 @@ export class UsersController {
     type: User,
     description: DynamicMessage.CRUD.getSuccess('user'),
   })
+  @CheckAbilites({ action: Action.Read, subject: User })
   async findOne(@Param('id', CustomParseIntPipe) id: number) {
     return new User(await this.usersService.findOne(id));
   }
@@ -92,6 +98,7 @@ export class UsersController {
     type: User,
     description: DynamicMessage.CRUD.updateSuccess('user'),
   })
+  @CheckAbilites({ action: Action.Update, subject: User })
   async update(
     @Param('id', CustomParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -105,6 +112,7 @@ export class UsersController {
     type: User,
     description: DynamicMessage.CRUD.deleteSuccess('user'),
   })
+  @CheckAbilites({ action: Action.Delete, subject: User })
   async remove(@Param('id', CustomParseIntPipe) id: number) {
     return new User(await this.usersService.remove(id));
   }

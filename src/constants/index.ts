@@ -6,6 +6,7 @@ export const PrismaClientErrorCode = {
 
 export const Messages = {
   ACCESS_DENIED: 'Access Denied',
+  NOT_ALLOWED: 'You are not allowed to perform this action',
   INTERNAL_SERVER_ERROR: 'Internal server error',
 };
 

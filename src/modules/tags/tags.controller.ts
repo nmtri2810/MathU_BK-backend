@@ -23,9 +23,12 @@ import { ResponseMessage } from 'src/common/decorators/response.decorator';
 import { DynamicMessage } from 'src/constants';
 import { Tag } from './entities/tag.entity';
 import { CustomParseIntPipe } from 'src/common/pipes/custom-parse-int.pipe';
+import { AbilitiesGuard } from 'src/common/guards/abilities.guard';
+import { CheckAbilites } from 'src/common/decorators/abilities.decorator';
+import { Action } from 'src/constants/enum';
 
 @Controller('tags')
-@UseGuards(AccessTokenGuard)
+@UseGuards(AccessTokenGuard, AbilitiesGuard)
 @ApiBearerAuth()
 @ApiTags('tags')
 export class TagsController {
@@ -40,6 +43,7 @@ export class TagsController {
     type: Tag,
     description: DynamicMessage.CRUD.createSuccess('tag'),
   })
+  @CheckAbilites({ action: Action.Create, subject: Tag })
   async create(@Body() createTagDto: CreateTagDto) {
     return await this.tagsService.create(createTagDto);
   }
@@ -51,6 +55,7 @@ export class TagsController {
     isArray: true,
     description: DynamicMessage.CRUD.getSuccess('tag list'),
   })
+  @CheckAbilites({ action: Action.Read, subject: Tag })
   async findAll() {
     return await this.tagsService.findAll();
   }
@@ -61,6 +66,7 @@ export class TagsController {
     type: Tag,
     description: DynamicMessage.CRUD.getSuccess('tag'),
   })
+  @CheckAbilites({ action: Action.Read, subject: Tag })
   async findOne(@Param('id', CustomParseIntPipe) id: number) {
     return await this.tagsService.findOne(id);
   }
@@ -74,6 +80,7 @@ export class TagsController {
     type: Tag,
     description: DynamicMessage.CRUD.updateSuccess('tag'),
   })
+  @CheckAbilites({ action: Action.Update, subject: Tag })
   async update(
     @Param('id', CustomParseIntPipe) id: number,
     @Body() updateTagDto: UpdateTagDto,
@@ -87,6 +94,7 @@ export class TagsController {
     type: Tag,
     description: DynamicMessage.CRUD.deleteSuccess('tag'),
   })
+  @CheckAbilites({ action: Action.Delete, subject: Tag })
   async remove(@Param('id', CustomParseIntPipe) id: number) {
     return await this.tagsService.remove(id);
   }
