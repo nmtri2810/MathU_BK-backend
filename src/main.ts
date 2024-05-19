@@ -6,7 +6,6 @@ import {
   HttpStatus,
   ValidationPipe,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { LoggerService } from './config/logger/logger.service';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { HttpExceptionFilter } from './common/exception-filters/http-exception.filter';
@@ -18,8 +17,7 @@ async function bootstrap() {
     bufferLogs: true,
   });
 
-  const configService = app.get(ConfigService);
-  const PORT = configService.get<number>('port');
+  const PORT = parseInt(process.env.PORT, 10);
   const { httpAdapter } = app.get(HttpAdapterHost);
 
   app.setGlobalPrefix('api/v1');
@@ -27,7 +25,9 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.useGlobalInterceptors(new ResponseInterceptor(new Reflector()));
   app.useLogger(new LoggerService());
-  app.enableCors();
+  app.enableCors({
+    origin: process.env.CLIENT_URL,
+  });
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalFilters(
     new PrismaClientExceptionFilter(httpAdapter, {

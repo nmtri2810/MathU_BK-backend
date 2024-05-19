@@ -15,6 +15,4 @@ export class CreateUserDto {
   @ApiProperty()
   @IsOptional()
   username: string;
-
-  refresh_token: string;
 }

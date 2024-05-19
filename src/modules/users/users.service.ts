@@ -4,14 +4,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'nestjs-prisma';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private prisma: PrismaService,
-    private configService: ConfigService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     createUserDto.password = await this.hashData(createUserDto.password);
@@ -67,7 +63,7 @@ export class UsersService {
   }
 
   async hashData(data: string): Promise<string> {
-    const saltRounds = this.configService.get<number>('auth.bcrypt.saltRounds');
+    const saltRounds = parseInt(process.env.SALT_ROUNDS, 10);
     const salt = await bcrypt.genSalt(saltRounds);
     return await bcrypt.hash(data, salt);
   }
