@@ -11,7 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/modules/users/users.service';
 import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
-import { Credentials, TokenPayload } from 'google-auth-library';
+import { TokenPayload } from 'google-auth-library';
 
 @Injectable()
 export class AuthService {
@@ -119,7 +119,7 @@ export class AuthService {
     };
   }
 
-  async loginGoogle(user: TokenPayload, tokens: Credentials) {
+  async loginGoogle(user: TokenPayload) {
     const userExists = await this.usersService.findOneByEmail(user.email);
     const password = `${user.email}_${user.name}`;
 
@@ -127,45 +127,12 @@ export class AuthService {
       const createUserDto: CreateUserDto = {
         email: user.email,
         password,
-        username: '',
+        username: null,
       };
-      const userCreated = await this.usersService.create(createUserDto);
 
-      await this.usersService.updateRefreshTokenInDB(
-        userCreated.id,
-        tokens.refresh_token,
-      );
-
-      delete userCreated.password;
-      delete userCreated.refresh_token;
-
-      return {
-        user: userCreated,
-        tokens: {
-          accessToken: tokens.access_token,
-          refreshToken: tokens.refresh_token,
-        },
-      };
+      return this.register(createUserDto);
     }
 
-    const isPasswordValid = await bcrypt.compare(password, userExists.password);
-    if (!isPasswordValid)
-      throw new UnauthorizedException(DynamicMessage.invalid('password'));
-
-    await this.usersService.updateRefreshTokenInDB(
-      userExists.id,
-      tokens.refresh_token,
-    );
-
-    delete userExists.password;
-    delete userExists.refresh_token;
-
-    return {
-      user: userExists,
-      tokens: {
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token,
-      },
-    };
+    return this.login(user.email, password);
   }
 }
