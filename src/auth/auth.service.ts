@@ -9,15 +9,14 @@ import { Auth, Tokens } from './entity/auth.entity';
 import { DynamicMessage, Messages } from 'src/constants';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/modules/users/users.service';
 import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
+import { Credentials, TokenPayload } from 'google-auth-library';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    private configService: ConfigService,
     private usersService: UsersService,
   ) {}
 
@@ -101,15 +100,15 @@ export class AuthService {
       this.jwtService.signAsync(
         { userId },
         {
-          secret: this.configService.get<string>('auth.jwt_access.secret'),
-          expiresIn: this.configService.get<string>('auth.jwt_access.expired'),
+          secret: process.env.JWT_ACCESS_SECRET,
+          expiresIn: process.env.JWT_ACCESS_EXPIRED,
         },
       ),
       this.jwtService.signAsync(
         { userId },
         {
-          secret: this.configService.get<string>('auth.jwt_refresh.secret'),
-          expiresIn: this.configService.get<string>('auth.jwt_refresh.expired'),
+          secret: process.env.JWT_REFRESH_SECRET,
+          expiresIn: process.env.JWT_REFRESH_EXPIRED,
         },
       ),
     ]);
@@ -117,6 +116,56 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
+    };
+  }
+
+  async loginGoogle(user: TokenPayload, tokens: Credentials) {
+    const userExists = await this.usersService.findOneByEmail(user.email);
+    const password = `${user.email}_${user.name}`;
+
+    if (!userExists) {
+      const createUserDto: CreateUserDto = {
+        email: user.email,
+        password,
+        username: '',
+      };
+      const userCreated = await this.usersService.create(createUserDto);
+
+      await this.usersService.updateRefreshTokenInDB(
+        userCreated.id,
+        tokens.refresh_token,
+      );
+
+      delete userCreated.password;
+      delete userCreated.refresh_token;
+
+      return {
+        user: userCreated,
+        tokens: {
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+        },
+      };
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, userExists.password);
+    if (!isPasswordValid)
+      throw new UnauthorizedException(DynamicMessage.invalid('password'));
+
+    await this.usersService.updateRefreshTokenInDB(
+      userExists.id,
+      tokens.refresh_token,
+    );
+
+    delete userExists.password;
+    delete userExists.refresh_token;
+
+    return {
+      user: userExists,
+      tokens: {
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+      },
     };
   }
 }

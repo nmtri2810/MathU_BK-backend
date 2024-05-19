@@ -20,7 +20,7 @@ import { CaslModule } from './casl/casl.module';
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
-      load: [configuration],
+      load: [configuration], // not use in this app
     }),
     LoggerModule,
     PostsModule,
