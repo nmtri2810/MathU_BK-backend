@@ -84,7 +84,7 @@ export class AuthController {
       'postmessage',
     );
 
-    // access token, refresh token and id token for user info
+    // access token, refresh token and id token interact with Google
     const { tokens } = await oAuth2Client.getToken(code);
     await oAuth2Client.setCredentials(tokens);
 
@@ -94,7 +94,7 @@ export class AuthController {
     });
     const user = ticket.getPayload();
 
-    return this.authService.loginGoogle(user, tokens);
+    return this.authService.loginGoogle(user);
   }
 
   // Temp
