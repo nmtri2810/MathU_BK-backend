@@ -7,6 +7,11 @@ import { UsersService } from '../users/users.service';
 import { CaslAbilityFactory } from 'src/casl/casl-ability.factory/casl-ability.factory';
 import { User } from '../users/entities/user.entity';
 import { Action } from 'src/constants/enum';
+import {
+  PaginateFunction,
+  PaginatedResult,
+  paginator,
+} from 'src/utils/paginator';
 
 @Injectable()
 export class PostsService {
@@ -25,8 +30,20 @@ export class PostsService {
       });
   }
 
-  async findAll(): Promise<Post[]> {
-    return await this.prisma.posts.findMany({
+  async findAll(
+    page: number,
+    perPage: number,
+    keyword: string,
+  ): Promise<PaginatedResult<Post[]>> {
+    const paginate: PaginateFunction = paginator({ page, perPage });
+
+    return await paginate(this.prisma.posts, {
+      where: {
+        title: {
+          contains: keyword,
+          mode: 'insensitive',
+        },
+      },
       orderBy: [
         {
           created_at: 'desc',
