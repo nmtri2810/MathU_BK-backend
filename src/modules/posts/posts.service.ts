@@ -35,26 +35,21 @@ export class PostsService {
     perPage: number,
     keyword: string,
   ): Promise<PaginatedResult<Post[]>> {
-    const paginate: PaginateFunction = paginator({ perPage });
+    const paginate: PaginateFunction = paginator({ page, perPage });
 
-    return await paginate(
-      this.prisma.posts,
-      {
-        where: {
-          title: {
-            contains: keyword,
-          },
+    return await paginate(this.prisma.posts, {
+      where: {
+        title: {
+          contains: keyword,
+          mode: 'insensitive',
         },
-        orderBy: [
-          {
-            created_at: 'desc',
-          },
-        ],
       },
-      {
-        page,
-      },
-    );
+      orderBy: [
+        {
+          created_at: 'desc',
+        },
+      ],
+    });
   }
 
   async findOne(id: number): Promise<Post> {

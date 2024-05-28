@@ -1,5 +1,5 @@
 export interface PaginatedResult<T> {
-  dataList: T[];
+  list: T[];
   meta: {
     total: number;
     lastPage: number;
@@ -11,26 +11,24 @@ export interface PaginatedResult<T> {
 }
 
 export type PaginateOptions = {
-  page?: number | string;
-  perPage?: number | string;
+  page: number;
+  perPage: number;
 };
 
 export type PaginateFunction = <T, K>(
   model: any,
   args?: K,
-  options?: PaginateOptions,
 ) => Promise<PaginatedResult<T>>;
 
 export const paginator = (
   defaultOptions: PaginateOptions,
 ): PaginateFunction => {
-  return async (model, args: any = { where: undefined }, options) => {
-    const page = Number(options?.page || defaultOptions?.page) || 1;
-    const perPage = Number(options?.perPage || defaultOptions?.perPage) || 10;
+  return async (model, args: any = { where: undefined }) => {
+    const page = defaultOptions?.page || 1;
+    const perPage = defaultOptions?.perPage || 10;
 
     const skip = page > 0 ? perPage * (page - 1) : 0;
-    // use prisma.queryRaw because %, _
-    const [total, dataList] = await Promise.all([
+    const [total, list] = await Promise.all([
       model.count({ where: args.where }),
       model.findMany({
         ...args,
@@ -41,7 +39,7 @@ export const paginator = (
     const lastPage = Math.ceil(total / perPage);
 
     return {
-      dataList,
+      list,
       meta: {
         total,
         lastPage,

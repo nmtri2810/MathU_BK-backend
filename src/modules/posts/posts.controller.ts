@@ -64,8 +64,8 @@ export class PostsController {
   })
   @CheckAbilites({ action: Action.Read, subject: PostEntity })
   async findAll(
-    @Query('page') page: number = 1,
-    @Query('perPage') perPage: number = 10,
+    @Query('page', CustomParseIntPipe) page: number = 1,
+    @Query('perPage', CustomParseIntPipe) perPage: number = 10,
     @Query('keyword') keyword: string = '',
   ) {
     return await this.postsService.findAll(page, perPage, keyword.trim());
