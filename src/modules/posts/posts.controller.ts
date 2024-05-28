@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -62,8 +63,12 @@ export class PostsController {
     description: DynamicMessage.CRUD.getSuccess('post list'),
   })
   @CheckAbilites({ action: Action.Read, subject: PostEntity })
-  async findAll() {
-    return await this.postsService.findAll();
+  async findAll(
+    @Query('page') page: number = 1,
+    @Query('perPage') perPage: number = 10,
+    @Query('keyword') keyword: string = '',
+  ) {
+    return await this.postsService.findAll(page, perPage, keyword.trim());
   }
 
   @Get(':id')
