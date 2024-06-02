@@ -13,6 +13,9 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @ApiProperty()
-  @IsOptional()
   username: string;
+
+  @IsOptional()
+  @ApiProperty()
+  reputation: number;
 }

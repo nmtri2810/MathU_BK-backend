@@ -29,6 +29,9 @@ export class User implements Users {
   username: string;
 
   @ApiProperty()
+  reputation: number;
+
+  @ApiProperty()
   role_id: number;
 
   @Exclude()
