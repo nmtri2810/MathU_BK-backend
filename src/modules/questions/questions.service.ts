@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { CreateQuestionDto } from './dto/create-question.dto';
+import { UpdateQuestionDto } from './dto/update-question.dto';
 import { PrismaService } from 'nestjs-prisma';
-import { Post } from './entities/post.entity';
+import { Question } from './entities/question.entity';
 import { UsersService } from '../users/users.service';
 import { CaslAbilityFactory } from 'src/casl/casl-ability.factory/casl-ability.factory';
 import { User } from '../users/entities/user.entity';
@@ -14,19 +14,19 @@ import {
 } from 'src/utils/paginator';
 
 @Injectable()
-export class PostsService {
+export class QuestionsService {
   constructor(
     private prisma: PrismaService,
     private usersService: UsersService,
     private caslAbility: CaslAbilityFactory,
   ) {}
 
-  async create(createPostDto: CreatePostDto): Promise<Post> {
-    const user = await this.usersService.findOne(createPostDto.user_id);
+  async create(createQuestionDto: CreateQuestionDto): Promise<Question> {
+    const user = await this.usersService.findOne(createQuestionDto.user_id);
 
     if (user)
-      return await this.prisma.posts.create({
-        data: createPostDto,
+      return await this.prisma.questions.create({
+        data: createQuestionDto,
       });
   }
 
@@ -34,10 +34,10 @@ export class PostsService {
     page: number,
     perPage: number,
     keyword: string,
-  ): Promise<PaginatedResult<Post[]>> {
+  ): Promise<PaginatedResult<Question[]>> {
     const paginate: PaginateFunction = paginator({ page, perPage });
 
-    return await paginate(this.prisma.posts, {
+    return await paginate(this.prisma.questions, {
       where: {
         title: {
           contains: keyword,
@@ -46,7 +46,7 @@ export class PostsService {
       },
       include: {
         tags: true,
-        _count: { select: { votes: true, comments: true } },
+        _count: { select: { votes: true, answers: true } },
       },
       orderBy: [
         {
@@ -56,40 +56,40 @@ export class PostsService {
     });
   }
 
-  async findOne(id: number): Promise<Post> {
-    return await this.prisma.posts.findUniqueOrThrow({
+  async findOne(id: number): Promise<Question> {
+    return await this.prisma.questions.findUniqueOrThrow({
       where: { id },
     });
   }
 
   async update(
     id: number,
-    updatePostDto: UpdatePostDto,
+    updateQuestionDto: UpdateQuestionDto,
     currentUser: User,
-  ): Promise<Post> {
-    const postToUpdate = await this.findOne(id);
+  ): Promise<Question> {
+    const questionToUpdate = await this.findOne(id);
     await this.caslAbility.isSubjectForbidden(
       currentUser,
       Action.Update,
-      Post,
-      postToUpdate,
+      Question,
+      questionToUpdate,
     );
 
-    return await this.prisma.posts.update({
+    return await this.prisma.questions.update({
       where: { id },
-      data: updatePostDto,
+      data: updateQuestionDto,
     });
   }
 
-  async remove(id: number, currentUser: User): Promise<Post> {
-    const postToDelete = await this.findOne(id);
+  async remove(id: number, currentUser: User): Promise<Question> {
+    const questionToDelete = await this.findOne(id);
     await this.caslAbility.isSubjectForbidden(
       currentUser,
       Action.Delete,
-      Post,
-      postToDelete,
+      Question,
+      questionToDelete,
     );
 
-    return await this.prisma.posts.delete({ where: { id } });
+    return await this.prisma.questions.delete({ where: { id } });
   }
 }

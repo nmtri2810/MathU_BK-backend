@@ -29,6 +29,9 @@ export class User implements Users {
   username: string;
 
   @ApiProperty()
+  avatar_url: string;
+
+  @ApiProperty()
   reputation: number;
 
   @ApiProperty()

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Comments } from '@prisma/client';
+import { Answers } from '@prisma/client';
 
-export class Comment implements Comments {
+export class Answer implements Answers {
   @ApiProperty()
   id: number;
 
@@ -9,7 +9,7 @@ export class Comment implements Comments {
   content: string;
 
   @ApiProperty()
-  post_id: number;
+  question_id: number;
 
   @ApiProperty()
   user_id: number;

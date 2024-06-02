@@ -7,8 +7,8 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './config/environments/configuration';
 import { LoggerMiddleware } from './config/logger/logger.middleware';
 import { LoggerModule } from './config/logger/logger.module';
-import { PostsModule } from './modules/posts/posts.module';
-import { CommentsModule } from './modules/comments/comments.module';
+import { QuestionsModule } from './modules/questions/questions.module';
+import { AnswersModule } from './modules/answers/answers.module';
 import { VotesModule } from './modules/votes/votes.module';
 import { TagsModule } from './modules/tags/tags.module';
 import { CaslModule } from './casl/casl.module';
@@ -23,8 +23,8 @@ import { CaslModule } from './casl/casl.module';
       load: [configuration], // not use in this app
     }),
     LoggerModule,
-    PostsModule,
-    CommentsModule,
+    QuestionsModule,
+    AnswersModule,
     VotesModule,
     TagsModule,
     CaslModule,

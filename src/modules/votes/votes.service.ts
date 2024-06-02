@@ -3,8 +3,8 @@ import { CreateVoteDto } from './dto/create-vote.dto';
 import { UpdateVoteDto } from './dto/update-vote.dto';
 import { PrismaService } from 'nestjs-prisma';
 import { UsersService } from '../users/users.service';
-import { PostsService } from '../posts/posts.service';
-import { CommentsService } from '../comments/comments.service';
+import { QuestionsService } from '../questions/questions.service';
+import { AnswersService } from '../answers/answers.service';
 import { DynamicMessage } from 'src/constants';
 import { Vote } from './entities/vote.entity';
 import { VoteableTypes } from '@prisma/client';
@@ -17,8 +17,8 @@ export class VotesService {
   constructor(
     private prisma: PrismaService,
     private usersService: UsersService,
-    private postsService: PostsService,
-    private commentsService: CommentsService,
+    private questionsService: QuestionsService,
+    private answersService: AnswersService,
     private caslAbility: CaslAbilityFactory,
   ) {}
 
@@ -84,8 +84,8 @@ export class VotesService {
 
   async getServiceByTypes(type: string) {
     const servicesMap = {
-      [VoteableTypes.POST]: this.postsService,
-      [VoteableTypes.COMMENT]: this.commentsService,
+      [VoteableTypes.QUESTION]: this.questionsService,
+      [VoteableTypes.ANSWER]: this.answersService,
     };
 
     if (!servicesMap[type])
