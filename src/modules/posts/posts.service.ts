@@ -44,6 +44,10 @@ export class PostsService {
           mode: 'insensitive',
         },
       },
+      include: {
+        tags: true,
+        _count: { select: { votes: true, comments: true } },
+      },
       orderBy: [
         {
           created_at: 'desc',

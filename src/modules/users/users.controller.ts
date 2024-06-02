@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,6 +27,7 @@ import { DynamicMessage } from 'src/constants';
 import { AbilitiesGuard } from 'src/common/guards/abilities.guard';
 import { CheckAbilites } from 'src/common/decorators/abilities.decorator';
 import { Action } from 'src/constants/enum';
+import { Request } from 'express';
 
 @Controller('users')
 @UseGuards(AccessTokenGuard, AbilitiesGuard)
@@ -90,6 +92,7 @@ export class UsersController {
           email: 'test@gmail.com',
           username: 'test',
           password: 'password',
+          reputation: 1,
         },
       },
     },
@@ -102,8 +105,13 @@ export class UsersController {
   async update(
     @Param('id', CustomParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
+    @Req() req: Request,
   ) {
-    return new User(await this.usersService.update(id, updateUserDto));
+    const currentUser = await this.usersService.findOne(req.user['userId']);
+
+    return new User(
+      await this.usersService.update(id, updateUserDto, currentUser),
+    );
   }
 
   @Delete(':id')

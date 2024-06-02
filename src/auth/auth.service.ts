@@ -12,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/modules/users/users.service';
 import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
 import { TokenPayload } from 'google-auth-library';
+import { faker } from '@faker-js/faker';
 
 @Injectable()
 export class AuthService {
@@ -124,10 +125,16 @@ export class AuthService {
     const password = `${user.email}_${user.name}`;
 
     if (!userExists) {
+      const randomUsername = faker.internet.userName({
+        firstName: user.email,
+        lastName: String(Math.floor(10000000 + Math.random() * 90000000)),
+      });
+
       const createUserDto: CreateUserDto = {
         email: user.email,
         password,
-        username: null,
+        username: randomUsername,
+        reputation: 0,
       };
 
       return this.register(createUserDto);

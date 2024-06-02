@@ -4,10 +4,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'nestjs-prisma';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { CaslAbilityFactory } from 'src/casl/casl-ability.factory/casl-ability.factory';
+import { Action } from 'src/constants/enum';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private caslAbility: CaslAbilityFactory,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     createUserDto.password = await this.hashData(createUserDto.password);
@@ -43,7 +48,19 @@ export class UsersService {
     });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(
+    id: number,
+    updateUserDto: UpdateUserDto,
+    currentUser: User,
+  ): Promise<User> {
+    const userToUpdate = await this.findOne(id);
+    await this.caslAbility.isSubjectForbidden(
+      currentUser,
+      Action.Update,
+      User,
+      userToUpdate,
+    );
+
     if (updateUserDto.password) {
       updateUserDto.password = await this.hashData(updateUserDto.password);
     }
