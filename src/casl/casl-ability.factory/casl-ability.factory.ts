@@ -10,15 +10,15 @@ import {
 import { Injectable } from '@nestjs/common';
 import { Messages } from 'src/constants';
 import { Action, Role } from 'src/constants/enum';
-import { Comment } from 'src/modules/comments/entities/comment.entity';
-import { Post } from 'src/modules/posts/entities/post.entity';
+import { Answer } from 'src/modules/answers/entities/answer.entity';
+import { Question } from 'src/modules/questions/entities/question.entity';
 import { Tag } from 'src/modules/tags/entities/tag.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import { Vote } from 'src/modules/votes/entities/vote.entity';
 
 export type Subjects =
   | InferSubjects<
-      typeof User | typeof Post | typeof Comment | typeof Vote | typeof Tag
+      typeof User | typeof Question | typeof Answer | typeof Vote | typeof Tag
     >
   | 'all';
 
@@ -47,7 +47,7 @@ export class CaslAbilityFactory {
         can(Action.Manage, Tag);
         can(Action.Read, 'all');
         can(Action.Update, User, { id: { $eq: userId } });
-        can(Action.Modify_Itself, [Post, Comment, Vote], {
+        can(Action.Modify_Itself, [Question, Answer, Vote], {
           user_id: { $eq: userId },
         });
         cannot(Action.Delete, User);
@@ -55,13 +55,13 @@ export class CaslAbilityFactory {
       case Role.USER:
         can(Action.Read, 'all');
         can(Action.Update, User, { id: { $eq: userId } });
-        can(Action.Modify_Itself, [Post, Comment, Vote], {
+        can(Action.Modify_Itself, [Question, Answer, Vote], {
           user_id: { $eq: userId },
         });
         cannot(Action.Delete, User);
         break;
       default:
-        can(Action.Read, [Post, Comment, Vote]);
+        can(Action.Read, [Question, Answer, Vote]);
     }
 
     return build({

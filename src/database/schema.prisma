@@ -18,15 +18,16 @@ model Users {
   email         String  @unique
   password      String
   username      String  @unique
+  avatar_url    String?
   reputation    Int     @default(0)
   refresh_token String?
 
   role    Roles @relation(fields: [role_id], references: [id])
   role_id Int   @default(3)
 
-  posts    Posts[]
-  votes    Votes[]
-  comments Comments[]
+  questions Questions[]
+  votes     Votes[]
+  answers   Answers[]
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
@@ -44,7 +45,7 @@ model Roles {
   deleted_at DateTime? @db.Timestamp()
 }
 
-model Posts {
+model Questions {
   id          Int    @id @unique @default(autoincrement())
   title       String @unique
   description String
@@ -52,25 +53,25 @@ model Posts {
   user    Users @relation(fields: [user_id], references: [id])
   user_id Int
 
-  comments Comments[]
-  tags     PostsTags[]
-  votes    Votes[]     @relation("post_vote")
+  answers Answers[]
+  tags    QuestionsTags[]
+  votes   Votes[]         @relation("question_vote")
 
-  created_at DateTime  @default(now()) //post_date
+  created_at DateTime  @default(now()) //question_date
   updated_at DateTime? @updatedAt
   deleted_at DateTime? @db.Timestamp()
 }
 
-model Comments {
+model Answers {
   id      Int    @id @unique @default(autoincrement())
   content String
 
-  post    Posts @relation(fields: [post_id], references: [id])
-  post_id Int
-  user    Users @relation(fields: [user_id], references: [id])
-  user_id Int
+  question    Questions @relation(fields: [question_id], references: [id])
+  question_id Int
+  user        Users     @relation(fields: [user_id], references: [id])
+  user_id     Int
 
-  votes Votes[] @relation("comment_vote")
+  votes Votes[] @relation("answer_vote")
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
@@ -82,24 +83,24 @@ model Tags {
   name        String @unique
   description String
 
-  posts PostsTags[]
+  questions QuestionsTags[]
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   deleted_at DateTime? @db.Timestamp()
 }
 
-model PostsTags {
-  post    Posts @relation(fields: [post_id], references: [id])
-  post_id Int
-  tag     Tags  @relation(fields: [tag_id], references: [id])
-  tag_id  Int
+model QuestionsTags {
+  question    Questions @relation(fields: [question_id], references: [id])
+  question_id Int
+  tag         Tags      @relation(fields: [tag_id], references: [id])
+  tag_id      Int
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   deleted_at DateTime? @db.Timestamp()
 
-  @@id([post_id, tag_id])
+  @@id([question_id, tag_id])
 }
 
 model Votes {
@@ -108,8 +109,8 @@ model Votes {
 
   user          Users         @relation(fields: [user_id], references: [id])
   user_id       Int
-  post          Posts?        @relation("post_vote", fields: [voteable_id], references: [id], map: "post_voteable_id")
-  comment       Comments?     @relation("comment_vote", fields: [voteable_id], references: [id], map: "comment_voteable_id")
+  question      Questions?    @relation("question_vote", fields: [voteable_id], references: [id], map: "question_voteable_id")
+  answer        Answers?      @relation("answer_vote", fields: [voteable_id], references: [id], map: "answer_voteable_id")
   voteable_id   Int
   voteable_type VoteableTypes
 
@@ -122,6 +123,6 @@ model Votes {
 
 // FUCKING STUPID PRISMA NO ENUM SETUP VALUE
 enum VoteableTypes {
-  POST
-  COMMENT
+  QUESTION
+  ANSWER
 }

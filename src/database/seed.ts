@@ -71,49 +71,49 @@ async function seedUsers() {
   console.log(usersData);
 }
 
-async function seedPosts() {
-  const postsData = [];
+async function seedQuestions() {
+  const questionsData = [];
 
   for (let i = 1; i < 11; i++) {
-    const post = await prisma.posts.upsert({
+    const question = await prisma.questions.upsert({
       where: { id: i },
       update: {},
       create: {
-        title: `Title post ${i}`,
+        title: `Title question ${i}`,
         description: `Desc ${i}`,
         user_id: i,
       },
     });
-    postsData.push(post);
+    questionsData.push(question);
   }
 
-  console.log(postsData);
+  console.log(questionsData);
 }
 
-async function seedComments() {
-  const commentsData = [];
+async function seedAnswers() {
+  const answersData = [];
 
   for (let i = 1; i < 11; i++) {
-    const comment = await prisma.comments.upsert({
+    const answer = await prisma.answers.upsert({
       where: { id: i },
       update: {},
       create: {
-        content: `Comment ${i} for post`,
-        post_id: await randomIntegerFromRange(1, 3),
+        content: `Answer ${i} for question`,
+        question_id: await randomIntegerFromRange(1, 3),
         user_id: await randomIntegerFromRange(1, 3),
       },
     });
-    commentsData.push(comment);
+    answersData.push(answer);
   }
 
-  console.log(commentsData);
+  console.log(answersData);
 }
 
 async function main() {
   await seedRoles();
   await seedUsers();
-  await seedPosts();
-  await seedComments();
+  await seedQuestions();
+  await seedAnswers();
 }
 
 // execute the main function

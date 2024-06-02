@@ -2,3 +2,4 @@
 - [ ] Soft delete
 - [ ] Pagination
 - [ ] Not found interceptor
+- [ ] How "View Count" is best implemented?
