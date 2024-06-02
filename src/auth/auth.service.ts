@@ -126,8 +126,8 @@ export class AuthService {
 
     if (!userExists) {
       const randomUsername = faker.internet.userName({
-        firstName: user.email,
-        lastName: String(Math.floor(10000000 + Math.random() * 90000000)),
+        firstName: user.email.split('@')[0],
+        lastName: `_${Math.floor(10000000 + Math.random() * 90000000)}`,
       });
 
       const createUserDto: CreateUserDto = {
