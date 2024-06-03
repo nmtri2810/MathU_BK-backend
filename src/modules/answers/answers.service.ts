@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAnswerDto } from './dto/create-answer.dto';
 import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { PrismaService } from 'nestjs-prisma';
@@ -8,6 +8,7 @@ import { QuestionsService } from '../questions/questions.service';
 import { CaslAbilityFactory } from 'src/casl/casl-ability.factory/casl-ability.factory';
 import { User } from '../users/entities/user.entity';
 import { Action } from 'src/constants/enum';
+import { Messages } from 'src/constants';
 
 @Injectable()
 export class AnswersService {
@@ -48,6 +49,7 @@ export class AnswersService {
 
   async update(
     id: number,
+    questionId: number,
     updateAnswerDto: UpdateAnswerDto,
     currentUser: User,
   ): Promise<Answer> {
@@ -59,9 +61,22 @@ export class AnswersService {
       answerToUpdate,
     );
 
-    return await this.prisma.answers.update({
-      where: { id },
-      data: updateAnswerDto,
+    return this.prisma.$transaction(async (tx) => {
+      const acceptedAnswer = await tx.answers.findFirst({
+        where: {
+          question_id: questionId,
+          is_accepted: true,
+        },
+      });
+
+      if (acceptedAnswer) {
+        throw new BadRequestException(Messages.ACCEPTED_ANSWER_EXIST);
+      }
+
+      return await tx.answers.update({
+        where: { id },
+        data: updateAnswerDto,
+      });
     });
   }
 

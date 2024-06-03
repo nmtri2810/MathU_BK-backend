@@ -9,6 +9,9 @@ export class Answer implements Answers {
   content: string;
 
   @ApiProperty()
+  is_accepted: boolean;
+
+  @ApiProperty()
   question_id: number;
 
   @ApiProperty()

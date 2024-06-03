@@ -109,11 +109,57 @@ async function seedAnswers() {
   console.log(answersData);
 }
 
+async function seedTags() {
+  const tagsData = [];
+
+  for (let i = 1; i < 11; i++) {
+    const tag = await prisma.tags.upsert({
+      where: { id: i },
+      update: {},
+      create: {
+        name: `Tag ${i}`,
+        description: `Tag ${i} is blablabla`,
+      },
+    });
+    tagsData.push(tag);
+  }
+
+  console.log(tagsData);
+}
+
+async function seedQuestionsTags() {
+  const questionsTagsData = [];
+
+  for (let i = 1; i < 11; i++) {
+    const questionId = await randomIntegerFromRange(1, 3);
+    const tagId = await randomIntegerFromRange(1, 3);
+
+    const questionTag = await prisma.questionsTags.upsert({
+      where: {
+        question_id_tag_id: {
+          question_id: questionId,
+          tag_id: tagId,
+        },
+      },
+      update: {},
+      create: {
+        question_id: questionId,
+        tag_id: tagId,
+      },
+    });
+    questionsTagsData.push(questionTag);
+  }
+
+  console.log(questionsTagsData);
+}
+
 async function main() {
   await seedRoles();
   await seedUsers();
   await seedQuestions();
   await seedAnswers();
+  await seedTags();
+  await seedQuestionsTags();
 }
 
 // execute the main function

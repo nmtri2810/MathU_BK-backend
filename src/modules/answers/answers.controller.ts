@@ -89,12 +89,18 @@ export class AnswersController {
   @CheckAbilites({ action: Action.Update, subject: Answer })
   async update(
     @Param('id', CustomParseIntPipe) id: number,
+    @Param('questionId', CustomParseIntPipe) questionId: number,
     @Body() updateAnswerDto: UpdateAnswerDto,
     @Req() req: Request,
   ) {
     const currentUser = await this.usersService.findOne(req.user['userId']);
 
-    return await this.answersService.update(id, updateAnswerDto, currentUser);
+    return await this.answersService.update(
+      id,
+      questionId,
+      updateAnswerDto,
+      currentUser,
+    );
   }
 
   @Delete(':id')

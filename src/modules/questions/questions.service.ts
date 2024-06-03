@@ -56,10 +56,54 @@ export class QuestionsService {
     });
   }
 
-  async findOne(id: number): Promise<Question> {
-    return await this.prisma.questions.findUniqueOrThrow({
+  // temp, will use raw query
+  async findOne(id: number): Promise<any> {
+    const question = await this.prisma.questions.findUniqueOrThrow({
       where: { id },
+      include: {
+        tags: {
+          include: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+              },
+            },
+          },
+        },
+        answers: {
+          select: {
+            is_accepted: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            avatar_url: true,
+            reputation: true,
+            role_id: true,
+          },
+        },
+        votes: true, // temp
+        _count: { select: { votes: true, answers: true, tags: true } },
+      },
     });
+
+    const transformedTags = question.tags.map((tagRelation) => tagRelation.tag);
+    const hasAcceptedAnswer = question.answers.some(
+      (answer) => answer.is_accepted,
+    );
+
+    delete question.answers;
+
+    return {
+      ...question,
+      tags: transformedTags,
+      has_accepted_answer: hasAcceptedAnswer,
+    };
   }
 
   async update(
