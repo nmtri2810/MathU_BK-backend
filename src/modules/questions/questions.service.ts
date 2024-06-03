@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { PrismaService } from 'nestjs-prisma';
-import { Question } from './entities/question.entity';
+import { FullQuestion, Question } from './entities/question.entity';
 import { UsersService } from '../users/users.service';
 import { CaslAbilityFactory } from 'src/casl/casl-ability.factory/casl-ability.factory';
 import { User } from '../users/entities/user.entity';
@@ -34,49 +34,64 @@ export class QuestionsService {
     page: number,
     perPage: number,
     keyword: string,
-  ): Promise<PaginatedResult<Question[]>> {
+  ): Promise<PaginatedResult<FullQuestion>> {
     const paginate: PaginateFunction = paginator({ page, perPage });
 
-    return await paginate(this.prisma.questions, {
-      where: {
-        title: {
-          contains: keyword,
-          mode: 'insensitive',
+    const questions: PaginatedResult<FullQuestion> = await paginate(
+      this.prisma.questions,
+      {
+        where: {
+          title: {
+            contains: keyword,
+            mode: 'insensitive',
+          },
         },
-      },
-      include: {
-        tags: true,
-        _count: { select: { votes: true, answers: true } },
-      },
-      orderBy: [
-        {
-          created_at: 'desc',
+        include: {
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
+          answers: true,
+          user: {
+            select: {
+              id: true,
+              email: true,
+              username: true,
+              avatar_url: true,
+              reputation: true,
+              role_id: true,
+            },
+          },
+          votes: true,
+          _count: { select: { votes: true, answers: true, tags: true } },
         },
-      ],
-    });
+        orderBy: [
+          {
+            created_at: 'desc',
+          },
+        ],
+      },
+    );
+
+    questions.list = questions.list.map((question) => ({
+      ...question,
+      tags: question.tags.map((tag) => tag.tag), // cannot use type here?
+    }));
+
+    return questions;
   }
 
-  // temp, will use raw query
-  async findOne(id: number): Promise<any> {
+  async findOne(id: number): Promise<FullQuestion> {
     const question = await this.prisma.questions.findUniqueOrThrow({
       where: { id },
       include: {
         tags: {
           include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-              },
-            },
+            tag: true,
           },
         },
-        answers: {
-          select: {
-            is_accepted: true,
-          },
-        },
+        answers: true,
         user: {
           select: {
             id: true,
@@ -87,22 +102,16 @@ export class QuestionsService {
             role_id: true,
           },
         },
-        votes: true, // temp
+        votes: true,
         _count: { select: { votes: true, answers: true, tags: true } },
       },
     });
 
     const transformedTags = question.tags.map((tagRelation) => tagRelation.tag);
-    const hasAcceptedAnswer = question.answers.some(
-      (answer) => answer.is_accepted,
-    );
-
-    delete question.answers;
 
     return {
       ...question,
       tags: transformedTags,
-      has_accepted_answer: hasAcceptedAnswer,
     };
   }
 

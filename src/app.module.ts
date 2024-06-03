@@ -12,6 +12,7 @@ import { AnswersModule } from './modules/answers/answers.module';
 import { VotesModule } from './modules/votes/votes.module';
 import { TagsModule } from './modules/tags/tags.module';
 import { CaslModule } from './casl/casl.module';
+import { QuestionsTagsModule } from './modules/questions-tags/questions-tags.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CaslModule } from './casl/casl.module';
     VotesModule,
     TagsModule,
     CaslModule,
+    QuestionsTagsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
