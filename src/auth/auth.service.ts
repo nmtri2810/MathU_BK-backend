@@ -134,7 +134,6 @@ export class AuthService {
         email: user.email,
         password,
         username: randomUsername,
-        reputation: 0,
       };
 
       return this.register(createUserDto);
