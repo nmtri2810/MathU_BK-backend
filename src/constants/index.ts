@@ -24,3 +24,17 @@ export const DynamicMessage = {
   invalid: (field: string) => `Invalid ${field}`,
   notFound: (field: string) => `${field} not found`,
 };
+
+export const tagsSeedData = [
+  { name: 'Calculus 1', description: 'Calculus 1 is a subject ...' },
+  { name: 'Calculus 2', description: 'Calculus 2 is a subject ...' },
+  { name: 'Calculus 3', description: 'Calculus 3 is a subject ...' },
+  {
+    name: 'Probability statistics',
+    description: 'Probability statistics is a subject ...',
+  },
+  {
+    name: 'Linear algebra',
+    description: 'Linear algebra is a subject ...',
+  },
+];
