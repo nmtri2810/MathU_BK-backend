@@ -30,13 +30,13 @@ import { Action } from 'src/constants/enum';
 import { Request } from 'express';
 
 @Controller('users')
-@UseGuards(AccessTokenGuard, AbilitiesGuard)
-@ApiBearerAuth()
 @ApiTags('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.createSuccess('user'))
   @ApiBody({
     type: CreateUserDto,
@@ -83,6 +83,8 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.updateSuccess('user'))
   @ApiBody({
     type: UpdateUserDto,
@@ -115,6 +117,8 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.deleteSuccess('user'))
   @ApiOkResponse({
     type: User,

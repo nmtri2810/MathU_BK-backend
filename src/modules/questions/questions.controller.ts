@@ -32,8 +32,6 @@ import { UsersService } from '../users/users.service';
 import { AbilitiesGuard } from 'src/common/guards/abilities.guard';
 
 @Controller('questions')
-@UseGuards(AccessTokenGuard, AbilitiesGuard)
-@ApiBearerAuth()
 @ApiTags('questions')
 export class QuestionsController {
   constructor(
@@ -42,6 +40,8 @@ export class QuestionsController {
   ) {}
 
   @Post()
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.createSuccess('question'))
   @ApiBody({
     type: CreateQuestionDto,
@@ -83,6 +83,8 @@ export class QuestionsController {
   }
 
   @Patch(':id')
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.updateSuccess('question'))
   @ApiBody({
     type: UpdateQuestionDto,
@@ -107,6 +109,8 @@ export class QuestionsController {
   }
 
   @Delete(':id')
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.deleteSuccess('question'))
   @ApiOkResponse({
     type: Question,

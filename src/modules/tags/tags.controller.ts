@@ -28,13 +28,13 @@ import { CheckAbilites } from 'src/common/decorators/abilities.decorator';
 import { Action } from 'src/constants/enum';
 
 @Controller('tags')
-@UseGuards(AccessTokenGuard, AbilitiesGuard)
-@ApiBearerAuth()
 @ApiTags('tags')
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
   @Post()
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.createSuccess('tag'))
   @ApiBody({
     type: CreateTagDto,
@@ -72,6 +72,8 @@ export class TagsController {
   }
 
   @Patch(':id')
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.updateSuccess('tag'))
   @ApiBody({
     type: UpdateTagDto,
@@ -89,6 +91,8 @@ export class TagsController {
   }
 
   @Delete(':id')
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.deleteSuccess('tag'))
   @ApiOkResponse({
     type: Tag,
