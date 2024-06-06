@@ -12,6 +12,7 @@ import {
   PaginatedResult,
   paginator,
 } from 'src/utils/paginator';
+import { questionIncludeConfig } from 'src/constants/prisma-config';
 
 @Injectable()
 export class QuestionsService {
@@ -21,12 +22,13 @@ export class QuestionsService {
     private caslAbility: CaslAbilityFactory,
   ) {}
 
-  async create(createQuestionDto: CreateQuestionDto): Promise<Question> {
+  async create(createQuestionDto: CreateQuestionDto): Promise<FullQuestion> {
     const user = await this.usersService.findOne(createQuestionDto.user_id);
 
     if (user)
       return await this.prisma.questions.create({
         data: createQuestionDto,
+        include: questionIncludeConfig,
       });
   }
 
@@ -46,26 +48,7 @@ export class QuestionsService {
             mode: 'insensitive',
           },
         },
-        include: {
-          tags: {
-            include: {
-              tag: true,
-            },
-          },
-          answers: true,
-          user: {
-            select: {
-              id: true,
-              email: true,
-              username: true,
-              avatar_url: true,
-              reputation: true,
-              role_id: true,
-            },
-          },
-          votes: true,
-          _count: { select: { votes: true, answers: true, tags: true } },
-        },
+        include: questionIncludeConfig,
         orderBy: [
           {
             created_at: 'desc',
@@ -85,26 +68,7 @@ export class QuestionsService {
   async findOne(id: number): Promise<FullQuestion> {
     const question = await this.prisma.questions.findUniqueOrThrow({
       where: { id },
-      include: {
-        tags: {
-          include: {
-            tag: true,
-          },
-        },
-        answers: true,
-        user: {
-          select: {
-            id: true,
-            email: true,
-            username: true,
-            avatar_url: true,
-            reputation: true,
-            role_id: true,
-          },
-        },
-        votes: true,
-        _count: { select: { votes: true, answers: true, tags: true } },
-      },
+      include: questionIncludeConfig,
     });
 
     const transformedTags = question.tags.map((tagRelation) => tagRelation.tag);
@@ -119,7 +83,7 @@ export class QuestionsService {
     id: number,
     updateQuestionDto: UpdateQuestionDto,
     currentUser: User,
-  ): Promise<Question> {
+  ): Promise<FullQuestion> {
     const questionToUpdate = await this.findOne(id);
     await this.caslAbility.isSubjectForbidden(
       currentUser,
@@ -131,10 +95,11 @@ export class QuestionsService {
     return await this.prisma.questions.update({
       where: { id },
       data: updateQuestionDto,
+      include: questionIncludeConfig,
     });
   }
 
-  async remove(id: number, currentUser: User): Promise<Question> {
+  async remove(id: number, currentUser: User): Promise<FullQuestion> {
     const questionToDelete = await this.findOne(id);
     await this.caslAbility.isSubjectForbidden(
       currentUser,
@@ -143,6 +108,9 @@ export class QuestionsService {
       questionToDelete,
     );
 
-    return await this.prisma.questions.delete({ where: { id } });
+    return await this.prisma.questions.delete({
+      where: { id },
+      include: questionIncludeConfig,
+    });
   }
 }
