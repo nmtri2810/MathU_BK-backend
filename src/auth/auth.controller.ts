@@ -99,6 +99,8 @@ export class AuthController {
 
   // Temp
   @Post('google-refresh')
+  @UseGuards(RefreshTokenGuard)
+  @ApiBearerAuth()
   async loginGoogleRefreshToken(@Req() req: Request) {
     const user = new UserRefreshClient(
       process.env.GOOGLE_CLIENT_ID,

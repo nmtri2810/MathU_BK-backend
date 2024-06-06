@@ -31,8 +31,6 @@ import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 
 @Controller('votes')
-@UseGuards(AccessTokenGuard, AbilitiesGuard)
-@ApiBearerAuth()
 @ApiTags('votes')
 export class VotesController {
   constructor(
@@ -41,6 +39,8 @@ export class VotesController {
   ) {}
 
   @Post()
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.createSuccess('vote'))
   @ApiBody({
     type: CreateVoteDto,
@@ -78,6 +78,8 @@ export class VotesController {
   }
 
   @Patch(':id')
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.updateSuccess('vote'))
   @ApiBody({
     type: UpdateVoteDto,
@@ -98,6 +100,8 @@ export class VotesController {
   }
 
   @Delete(':id')
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.deleteSuccess('vote'))
   @ApiOkResponse({
     type: Vote,

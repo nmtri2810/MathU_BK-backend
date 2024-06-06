@@ -31,8 +31,6 @@ import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 
 @Controller('answers')
-@UseGuards(AccessTokenGuard, AbilitiesGuard)
-@ApiBearerAuth()
 @ApiTags('answers')
 export class AnswersController {
   constructor(
@@ -41,6 +39,8 @@ export class AnswersController {
   ) {}
 
   @Post()
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.createSuccess('answer'))
   @ApiBody({
     type: CreateAnswerDto,
@@ -78,6 +78,8 @@ export class AnswersController {
   }
 
   @Patch(':id')
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.updateSuccess('answer'))
   @ApiBody({
     type: UpdateAnswerDto,
@@ -104,6 +106,8 @@ export class AnswersController {
   }
 
   @Delete(':id')
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @ApiBearerAuth()
   @ResponseMessage(DynamicMessage.CRUD.deleteSuccess('answer'))
   @ApiOkResponse({
     type: Answer,
