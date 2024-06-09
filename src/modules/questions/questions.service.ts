@@ -25,11 +25,23 @@ export class QuestionsService {
   async create(createQuestionDto: CreateQuestionDto): Promise<FullQuestion> {
     const user = await this.usersService.findOne(createQuestionDto.user_id);
 
-    if (user)
+    if (user) {
+      const { tag_ids, ...questionData } = createQuestionDto;
+
       return await this.prisma.questions.create({
-        data: createQuestionDto,
+        data: {
+          ...questionData,
+          tags: {
+            create: tag_ids.map((tag_id) => ({
+              tag: {
+                connect: { id: tag_id },
+              },
+            })),
+          },
+        },
         include: questionIncludeConfig,
       });
+    }
   }
 
   async findAll(
@@ -92,9 +104,21 @@ export class QuestionsService {
       questionToUpdate,
     );
 
+    const { tag_ids, ...questionData } = updateQuestionDto;
+
     return await this.prisma.questions.update({
       where: { id },
-      data: updateQuestionDto,
+      data: {
+        ...questionData,
+        tags: {
+          deleteMany: {},
+          create: tag_ids?.map((tag_id) => ({
+            tag: {
+              connect: { id: tag_id },
+            },
+          })),
+        },
+      },
       include: questionIncludeConfig,
     });
   }
