@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateQuestionDto {
   @IsNotEmpty()
@@ -13,4 +18,9 @@ export class CreateQuestionDto {
   @IsNotEmpty()
   @ApiProperty()
   user_id: number;
+
+  @IsArray()
+  @ArrayNotEmpty()
+  @ApiProperty()
+  tag_ids: number[];
 }

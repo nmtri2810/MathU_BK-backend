@@ -45,6 +45,16 @@ export class QuestionsController {
   @ResponseMessage(DynamicMessage.CRUD.createSuccess('question'))
   @ApiBody({
     type: CreateQuestionDto,
+    examples: {
+      question: {
+        value: {
+          title: 'Some Question Title',
+          description: 'Description of the question',
+          user_id: 2,
+          tag_ids: [1, 2, 3],
+        },
+      },
+    },
   })
   @ApiCreatedResponse({
     type: Question,
@@ -88,6 +98,15 @@ export class QuestionsController {
   @ResponseMessage(DynamicMessage.CRUD.updateSuccess('question'))
   @ApiBody({
     type: UpdateQuestionDto,
+    examples: {
+      question: {
+        value: {
+          title: 'Some Updated Question Title',
+          description: 'Description of the updated question',
+          tag_ids: [1, 2, 3],
+        },
+      },
+    },
   })
   @ApiOkResponse({
     type: Question,
