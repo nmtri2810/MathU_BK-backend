@@ -10,6 +10,7 @@ export const Messages = {
   INTERNAL_SERVER_ERROR: 'Internal server error',
   ACCEPTED_ANSWER_EXIST:
     'There is already an accepted answer for this question',
+  ANSWER_NOT_BELONGED: 'This answer does not belong in the question',
 };
 
 export const DynamicMessage = {
