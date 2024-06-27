@@ -95,6 +95,7 @@ async function seedQuestions() {
   console.log(questionsData);
 }
 
+// temp error
 async function seedAnswers() {
   const answersData = [];
   let answerId = 1;
@@ -175,7 +176,7 @@ async function main() {
   await seedRoles();
   await seedUsers();
   await seedQuestions();
-  await seedAnswers();
+  // await seedAnswers();
   await seedTags();
   await seedQuestionsTags();
 }

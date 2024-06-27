@@ -12,6 +12,9 @@ export class Answer implements Answers {
   is_accepted: boolean;
 
   @ApiProperty()
+  parent_id: number;
+
+  @ApiProperty()
   question_id: number;
 
   @ApiProperty()

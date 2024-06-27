@@ -67,12 +67,15 @@ model Answers {
   content     String
   is_accepted Boolean @default(false)
 
+  parent_id   Int?
+  parent      Answers?  @relation("answer_to_answer", fields: [parent_id], references: [id])
   question    Questions @relation(fields: [question_id], references: [id])
   question_id Int
   user        Users     @relation(fields: [user_id], references: [id])
   user_id     Int
 
-  votes Votes[] @relation("answer_vote")
+  votes    Votes[]   @relation("answer_vote")
+  children Answers[] @relation("answer_to_answer")
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
