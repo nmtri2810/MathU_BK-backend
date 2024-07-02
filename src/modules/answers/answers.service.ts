@@ -24,10 +24,12 @@ export class AnswersService {
     const question = await this.questionsService.findOne(
       createAnswerDto.question_id,
     );
-    const parentAnswer = await this.findOne(createAnswerDto.parent_id);
 
-    if (question.id !== parentAnswer.question_id) {
-      throw new BadRequestException(Messages.ANSWER_NOT_BELONGED);
+    if (createAnswerDto.parent_id || createAnswerDto.parent_id === 0) {
+      const parentAnswer = await this.findOne(createAnswerDto.parent_id);
+      if (question.id !== parentAnswer.question_id) {
+        throw new BadRequestException(Messages.ANSWER_NOT_BELONGED);
+      }
     }
 
     if (user && question)
