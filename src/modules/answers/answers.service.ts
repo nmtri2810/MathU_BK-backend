@@ -68,6 +68,7 @@ export class AnswersService {
       answerToUpdate,
     );
 
+    // check if the answer is not belonging to question
     return this.prisma.$transaction(async (tx) => {
       const acceptedAnswer = await tx.answers.findFirst({
         where: {

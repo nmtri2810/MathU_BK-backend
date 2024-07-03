@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { AnswersService } from './answers.service';
 import { CreateAnswerDto } from './dto/create-answer.dto';
@@ -91,7 +92,8 @@ export class AnswersController {
   @CheckAbilites({ action: Action.Update, subject: Answer })
   async update(
     @Param('id', CustomParseIntPipe) id: number,
-    @Param('questionId', CustomParseIntPipe) questionId: number,
+    // should in the body
+    @Query('question_id', CustomParseIntPipe) question_id: number,
     @Body() updateAnswerDto: UpdateAnswerDto,
     @Req() req: Request,
   ) {
@@ -99,7 +101,7 @@ export class AnswersController {
 
     return await this.answersService.update(
       id,
-      questionId,
+      question_id,
       updateAnswerDto,
       currentUser,
     );
