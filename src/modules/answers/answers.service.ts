@@ -9,6 +9,7 @@ import { CaslAbilityFactory } from 'src/casl/casl-ability.factory/casl-ability.f
 import { User } from '../users/entities/user.entity';
 import { Action } from 'src/constants/enum';
 import { Messages } from 'src/constants';
+import { answerIncludeConfig } from 'src/constants/prisma-config';
 
 @Injectable()
 export class AnswersService {
@@ -35,6 +36,7 @@ export class AnswersService {
     if (user && question)
       return await this.prisma.answers.create({
         data: createAnswerDto,
+        include: answerIncludeConfig,
       });
   }
 
@@ -45,12 +47,14 @@ export class AnswersService {
           created_at: 'desc',
         },
       ],
+      include: answerIncludeConfig,
     });
   }
 
   async findOne(id: number): Promise<Answer> {
     return await this.prisma.answers.findUniqueOrThrow({
       where: { id },
+      include: answerIncludeConfig,
     });
   }
 
@@ -84,6 +88,7 @@ export class AnswersService {
       return await tx.answers.update({
         where: { id },
         data: updateAnswerDto,
+        include: answerIncludeConfig,
       });
     });
   }
@@ -97,6 +102,9 @@ export class AnswersService {
       answerToDelete,
     );
 
-    return await this.prisma.answers.delete({ where: { id } });
+    return await this.prisma.answers.delete({
+      where: { id },
+      include: answerIncludeConfig,
+    });
   }
 }
