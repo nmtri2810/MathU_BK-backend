@@ -1,20 +1,42 @@
+const userConfig = {
+  select: {
+    id: true,
+    email: true,
+    username: true,
+    avatar_url: true,
+    reputation: true,
+    role_id: true,
+  },
+};
+
+export const answerIncludeConfig = {
+  children: {
+    include: {
+      user: userConfig,
+    },
+  },
+  user: userConfig,
+};
+
 export const questionIncludeConfig = {
   tags: {
     include: {
       tag: true,
     },
   },
-  answers: true,
-  user: {
+  answers: {
+    include: answerIncludeConfig,
+    where: { parent_id: null },
+  },
+  user: userConfig,
+  votes: true,
+  _count: {
     select: {
-      id: true,
-      email: true,
-      username: true,
-      avatar_url: true,
-      reputation: true,
-      role_id: true,
+      votes: true,
+      answers: {
+        where: { parent_id: null },
+      },
+      tags: true,
     },
   },
-  votes: true,
-  _count: { select: { votes: true, answers: true, tags: true } },
 };
