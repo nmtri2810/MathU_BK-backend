@@ -55,7 +55,7 @@ model Questions {
 
   answers Answers[]
   tags    QuestionsTags[]
-  votes   Votes[]         @relation("question_vote")
+  votes   Votes[]
 
   created_at DateTime  @default(now()) //question_date
   updated_at DateTime? @updatedAt
@@ -74,7 +74,7 @@ model Answers {
   user        Users     @relation(fields: [user_id], references: [id])
   user_id     Int
 
-  votes    Votes[]   @relation("answer_vote")
+  votes    Votes[]
   children Answers[] @relation("answer_to_answer")
 
   created_at DateTime  @default(now())
@@ -111,22 +111,17 @@ model Votes {
   id         Int     @id @unique @default(autoincrement())
   is_upvoted Boolean
 
-  user          Users         @relation(fields: [user_id], references: [id])
-  user_id       Int
-  question      Questions?    @relation("question_vote", fields: [voteable_id], references: [id], map: "question_voteable_id")
-  answer        Answers?      @relation("answer_vote", fields: [voteable_id], references: [id], map: "answer_voteable_id")
-  voteable_id   Int
-  voteable_type VoteableTypes
+  user        Users      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     Int
+  question    Questions? @relation(fields: [question_id], references: [id], onDelete: Cascade)
+  question_id Int?
+  answer      Answers?   @relation(fields: [answer_id], references: [id], onDelete: Cascade)
+  answer_id   Int?
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   deleted_at DateTime? @db.Timestamp()
 
-  @@unique([user_id, voteable_id, voteable_type])
-}
-
-// FUCKING STUPID PRISMA NO ENUM SETUP VALUE
-enum VoteableTypes {
-  QUESTION
-  ANSWER
+  @@unique([user_id, question_id])
+  @@unique([user_id, answer_id])
 }

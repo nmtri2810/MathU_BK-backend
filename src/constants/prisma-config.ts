@@ -16,6 +16,7 @@ export const answerIncludeConfig = {
     },
   },
   user: userConfig,
+  votes: true,
 };
 
 export const questionIncludeConfig = {

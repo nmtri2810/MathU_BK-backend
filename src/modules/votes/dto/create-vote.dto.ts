@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { VoteableTypes } from '@prisma/client';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateVoteDto {
   @IsNotEmpty()
@@ -11,11 +10,11 @@ export class CreateVoteDto {
   @ApiProperty()
   user_id: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty()
-  voteable_id: number;
+  question_id: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty()
-  voteable_type: VoteableTypes;
+  answer_id: number;
 }
