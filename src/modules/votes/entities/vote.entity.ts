@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { VoteableTypes, Votes } from '@prisma/client';
+import { Votes } from '@prisma/client';
 
 export class Vote implements Votes {
   @ApiProperty()
@@ -12,10 +12,10 @@ export class Vote implements Votes {
   user_id: number;
 
   @ApiProperty()
-  voteable_id: number;
+  question_id: number;
 
   @ApiProperty()
-  voteable_type: VoteableTypes;
+  answer_id: number;
 
   @ApiProperty()
   created_at: Date;
