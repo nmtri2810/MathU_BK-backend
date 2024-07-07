@@ -25,10 +25,6 @@ export const questionIncludeConfig = {
       tag: true,
     },
   },
-  answers: {
-    include: answerIncludeConfig,
-    where: { parent_id: null },
-  },
   user: userConfig,
   votes: true,
   _count: {

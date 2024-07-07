@@ -39,3 +39,10 @@ export const tagsSeedData = [
     description: 'Linear algebra is a subject ...',
   },
 ];
+
+export const SearchFormat = {
+  TAG: '[tag]',
+  USER: '[user]',
+  SCORE: '[score]',
+  IS_ACCEPTED: '[isaccepted]',
+};

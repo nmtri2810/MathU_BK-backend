@@ -10,6 +10,11 @@ import { User } from '../users/entities/user.entity';
 import { Action } from 'src/constants/enum';
 import { Messages } from 'src/constants';
 import { answerIncludeConfig } from 'src/constants/prisma-config';
+import {
+  PaginatedResult,
+  PaginateFunction,
+  paginator,
+} from 'src/utils/paginator';
 
 @Injectable()
 export class AnswersService {
@@ -40,15 +45,34 @@ export class AnswersService {
       });
   }
 
-  async findAll(): Promise<Answer[]> {
-    return await this.prisma.answers.findMany({
-      orderBy: [
-        {
-          created_at: 'desc',
+  async findAll(
+    question_id: number,
+    page: number,
+    perPage: number,
+  ): Promise<PaginatedResult<Answer>> {
+    const paginate: PaginateFunction = paginator({ page, perPage });
+
+    // for pagination, not use yet
+    const answers: PaginatedResult<Answer> = await paginate(
+      this.prisma.answers,
+      {
+        where: {
+          question_id,
+          parent_id: null,
         },
-      ],
-      include: answerIncludeConfig,
-    });
+        orderBy: [
+          {
+            is_accepted: 'desc',
+          },
+          {
+            created_at: 'desc',
+          },
+        ],
+        include: answerIncludeConfig,
+      },
+    );
+
+    return answers;
   }
 
   async findOne(id: number): Promise<Answer> {
