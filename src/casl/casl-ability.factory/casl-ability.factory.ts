@@ -58,6 +58,9 @@ export class CaslAbilityFactory {
         can(Action.Modify_Itself, [Question, Answer, Vote], {
           user_id: { $eq: userId },
         });
+        // Restrict Update action on Answer to only is_accepted field
+        can(Action.Update, Answer, ['is_accepted']);
+        cannot(Action.Create, Vote, { id: { $eq: userId } });
         cannot(Action.Delete, User);
         break;
       default:

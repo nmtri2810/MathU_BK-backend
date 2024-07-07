@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateVoteDto } from './dto/create-vote.dto';
 import { UpdateVoteDto } from './dto/update-vote.dto';
 import { PrismaService } from 'nestjs-prisma';
@@ -9,6 +9,7 @@ import { Vote } from './entities/vote.entity';
 import { User } from '../users/entities/user.entity';
 import { CaslAbilityFactory } from 'src/casl/casl-ability.factory/casl-ability.factory';
 import { Action } from 'src/constants/enum';
+import { Messages } from 'src/constants';
 
 @Injectable()
 export class VotesService {
@@ -29,9 +30,11 @@ export class VotesService {
         ? await this.questionsService.findOne(question_id)
         : await this.answersService.findOne(answer_id);
 
-      if (likedEntity) {
-        return await this.prisma.votes.create({ data: createVoteDto });
+      if (likedEntity.user_id === createVoteDto.user_id) {
+        throw new ForbiddenException(Messages.NOT_ALLOWED);
       }
+
+      return await this.prisma.votes.create({ data: createVoteDto });
     }
   }
 

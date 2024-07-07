@@ -63,8 +63,12 @@ export class AnswersController {
     description: DynamicMessage.CRUD.getSuccess('answer list'),
   })
   @CheckAbilites({ action: Action.Read, subject: Answer })
-  async findAll() {
-    return await this.answersService.findAll();
+  async findAll(
+    @Query('question_id', CustomParseIntPipe) question_id: number,
+    @Query('page', CustomParseIntPipe) page: number = 1,
+    @Query('perPage', CustomParseIntPipe) perPage: number = 10,
+  ) {
+    return await this.answersService.findAll(question_id, page, perPage);
   }
 
   @Get(':id')
