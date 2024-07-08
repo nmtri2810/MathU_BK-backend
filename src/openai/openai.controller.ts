@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { OpenaiService } from './openai.service';
 import { CreateChatCompletionRequest } from './dto/create-chat-completion.dto';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 
 @Controller('openai')
 @ApiTags('openai')
@@ -9,6 +10,8 @@ export class OpenaiController {
   constructor(private readonly openaiService: OpenaiService) {}
 
   @Post('chat-completion')
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   @ApiBody({
     type: CreateChatCompletionRequest,
     examples: {
@@ -29,6 +32,8 @@ export class OpenaiController {
   }
 
   @Post('check-duplicate-questions')
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   @ApiBody({
     type: CreateChatCompletionRequest,
     examples: {

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { OpenaiService } from './openai.service';
 import { OpenaiController } from './openai.controller';
 import OpenAI from 'openai';
-import { QuestionsModule } from 'src/modules/questions/questions.module';
+import { PrismaModule } from 'nestjs-prisma';
 
 @Module({
   providers: [
@@ -13,6 +13,6 @@ import { QuestionsModule } from 'src/modules/questions/questions.module';
     },
   ],
   controllers: [OpenaiController],
-  imports: [QuestionsModule],
+  imports: [PrismaModule],
 })
 export class OpenaiModule {}
