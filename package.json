@@ -41,6 +41,7 @@
     "google-auth-library": "^9.10.0",
     "morgan": "^1.10.0",
     "nestjs-prisma": "^0.23.0",
+    "openai": "^4.52.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.0",

@@ -13,6 +13,7 @@ import { VotesModule } from './modules/votes/votes.module';
 import { TagsModule } from './modules/tags/tags.module';
 import { CaslModule } from './casl/casl.module';
 import { QuestionsTagsModule } from './modules/questions-tags/questions-tags.module';
+import { OpenaiModule } from './openai/openai.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { QuestionsTagsModule } from './modules/questions-tags/questions-tags.mod
     TagsModule,
     CaslModule,
     QuestionsTagsModule,
+    OpenaiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
