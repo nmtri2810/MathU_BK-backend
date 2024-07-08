@@ -9,7 +9,7 @@ import { Vote } from './entities/vote.entity';
 import { User } from '../users/entities/user.entity';
 import { CaslAbilityFactory } from 'src/casl/casl-ability.factory/casl-ability.factory';
 import { Action } from 'src/constants/enum';
-import { Messages } from 'src/constants';
+import { Messages, ReputationPoints } from 'src/constants';
 
 @Injectable()
 export class VotesService {
@@ -34,7 +34,18 @@ export class VotesService {
         throw new ForbiddenException(Messages.NOT_ALLOWED);
       }
 
-      return await this.prisma.votes.create({ data: createVoteDto });
+      return await this.prisma.$transaction(async (tx) => {
+        await tx.users.update({
+          data: {
+            reputation: createVoteDto.is_upvoted
+              ? { increment: ReputationPoints.QUES_ANS_UPVOTE }
+              : { decrement: ReputationPoints.QUES_ANS_DOWNVOTE },
+          },
+          where: { id: likedEntity.user_id },
+        });
+
+        return await tx.votes.create({ data: createVoteDto });
+      });
     }
   }
 
@@ -67,9 +78,25 @@ export class VotesService {
       voteToUpdate,
     );
 
-    return await this.prisma.votes.update({
-      where: { id },
-      data: updateVoteDto,
+    return await this.prisma.$transaction(async (tx) => {
+      const { question_id, answer_id } = voteToUpdate;
+      const likedEntity = question_id
+        ? await this.questionsService.findOne(question_id)
+        : await this.answersService.findOne(answer_id);
+
+      await tx.users.update({
+        data: {
+          reputation: voteToUpdate.is_upvoted
+            ? { decrement: ReputationPoints.QUES_ANS_UPDATED }
+            : { increment: ReputationPoints.QUES_ANS_UPDATED },
+        },
+        where: { id: likedEntity.user_id },
+      });
+
+      return await tx.votes.update({
+        where: { id },
+        data: updateVoteDto,
+      });
     });
   }
 
@@ -82,6 +109,22 @@ export class VotesService {
       voteToDelete,
     );
 
-    return await this.prisma.votes.delete({ where: { id } });
+    return await this.prisma.$transaction(async (tx) => {
+      const { question_id, answer_id } = voteToDelete;
+      const likedEntity = question_id
+        ? await this.questionsService.findOne(question_id)
+        : await this.answersService.findOne(answer_id);
+
+      await tx.users.update({
+        data: {
+          reputation: voteToDelete.is_upvoted
+            ? { decrement: ReputationPoints.QUES_ANS_UPVOTE }
+            : { increment: ReputationPoints.QUES_ANS_DOWNVOTE },
+        },
+        where: { id: likedEntity.user_id },
+      });
+
+      return await tx.votes.delete({ where: { id } });
+    });
   }
 }
