@@ -26,7 +26,7 @@ export class OpenaiService {
       },
     });
 
-    const checkMsg = `So sánh tiêu đề "${messages[0].content}" với từng tiêu đề (title) trong mảng được chuỗi hóa (stringify) dưới đây ${JSON.stringify(questionList)} và xem có những tiêu đề nào có nội dung tương tự. Nếu có, trả lại dữ liệu tương tự được chuỗi hóa (stringify) với định dạng sau: [{id: id, title: title},...] và chỉ cần trả về dữ liệu, chỉ trả về tối đa 3 phần tử nếu nhiều hơn, và không cần nói gì thêm. Nếu không, trả lại dữ liệu với định dạng: "[]", không cần nói gì thêm.`;
+    const checkMsg = `So sánh tiêu đề "${messages[0].content}" với từng tiêu đề (title) trong mảng được chuỗi hóa (stringify) dưới đây ${JSON.stringify(questionList)} và xem có những tiêu đề nào có nội dung tương tự. Nếu có, trả lại dữ liệu tương tự được chuỗi hóa (stringify) với định dạng sau: [{id: id, title: title},...] và chỉ cần trả về dữ liệu, chỉ trả về tối đa 3 phần tử nếu nhiều hơn, và không cần nói gì thêm. Nếu không, trả lại dữ liệu với định dạng: "[]", không cần nói gì thêm. Trả dữ liệu theo đúng định dạng trên, không cần thêm bất kỳ ký tự nào khác như dấu \`\`\`json`;
     const askMsgs = messages.map((msg) => ({
       role: msg.role,
       content: checkMsg,

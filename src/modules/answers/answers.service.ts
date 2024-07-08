@@ -8,7 +8,7 @@ import { QuestionsService } from '../questions/questions.service';
 import { CaslAbilityFactory } from 'src/casl/casl-ability.factory/casl-ability.factory';
 import { User } from '../users/entities/user.entity';
 import { Action } from 'src/constants/enum';
-import { Messages } from 'src/constants';
+import { Messages, ReputationPoints } from 'src/constants';
 import { answerIncludeConfig } from 'src/constants/prisma-config';
 import {
   PaginatedResult,
@@ -97,7 +97,7 @@ export class AnswersService {
     );
 
     // check if the answer is not belonging to question
-    return this.prisma.$transaction(async (tx) => {
+    return await this.prisma.$transaction(async (tx) => {
       const acceptedAnswer = await tx.answers.findFirst({
         where: {
           question_id: questionId,
@@ -107,6 +107,29 @@ export class AnswersService {
 
       if (acceptedAnswer) {
         throw new BadRequestException(Messages.ACCEPTED_ANSWER_EXIST);
+      }
+
+      const answer = await tx.answers.findUnique({
+        where: { id },
+      });
+
+      // if the current user is not the answerer
+      if (currentUser.id !== answer.user_id) {
+        // Acceptor gained 2 reputation points
+        await tx.users.update({
+          data: {
+            reputation: { increment: ReputationPoints.USER_ACCEPTED_ANSWER },
+          },
+          where: { id: currentUser.id },
+        });
+
+        // Answerer gained 15 reputation points
+        await tx.users.update({
+          data: {
+            reputation: { increment: ReputationPoints.USER_CREATED_ANSWER },
+          },
+          where: { id: answer.user_id },
+        });
       }
 
       return await tx.answers.update({
