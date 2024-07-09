@@ -95,9 +95,9 @@ model Tags {
 }
 
 model QuestionsTags {
-  question    Questions @relation(fields: [question_id], references: [id])
+  question    Questions @relation(fields: [question_id], references: [id], onDelete: Cascade)
   question_id Int
-  tag         Tags      @relation(fields: [tag_id], references: [id])
+  tag         Tags      @relation(fields: [tag_id], references: [id], onDelete: Cascade)
   tag_id      Int
 
   created_at DateTime  @default(now())
