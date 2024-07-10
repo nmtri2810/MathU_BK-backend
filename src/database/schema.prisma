@@ -68,7 +68,7 @@ model Answers {
   is_accepted Boolean @default(false)
 
   parent_id   Int?
-  parent      Answers?  @relation("answer_to_answer", fields: [parent_id], references: [id])
+  parent      Answers?  @relation("answer_to_answer", fields: [parent_id], references: [id], onDelete: Cascade)
   question    Questions @relation(fields: [question_id], references: [id])
   question_id Int
   user        Users     @relation(fields: [user_id], references: [id])
