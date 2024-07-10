@@ -1,4 +1,4 @@
-const userConfig = {
+export const userConfig = {
   select: {
     id: true,
     email: true,
