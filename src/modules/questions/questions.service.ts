@@ -15,6 +15,7 @@ import {
 import {
   answerIncludeConfig,
   questionIncludeConfig,
+  userConfig,
 } from 'src/constants/prisma-config';
 import { SearchFormat } from 'src/constants';
 
@@ -46,11 +47,24 @@ export class QuestionsService {
         include: {
           ...questionIncludeConfig,
           answers: {
-            include: answerIncludeConfig,
+            include: {
+              ...answerIncludeConfig,
+              children: {
+                include: {
+                  user: userConfig,
+                },
+                orderBy: {
+                  created_at: 'desc',
+                },
+              },
+            },
             where: { parent_id: null },
             orderBy: [
               {
                 is_accepted: 'desc',
+              },
+              {
+                created_at: 'desc',
               },
             ],
           },
@@ -75,11 +89,24 @@ export class QuestionsService {
         include: {
           ...questionIncludeConfig,
           answers: {
-            include: answerIncludeConfig,
+            include: {
+              ...answerIncludeConfig,
+              children: {
+                include: {
+                  user: userConfig,
+                },
+                orderBy: {
+                  created_at: 'desc',
+                },
+              },
+            },
             where: { parent_id: null },
             orderBy: [
               {
                 is_accepted: 'desc',
+              },
+              {
+                created_at: 'desc',
               },
             ],
           },
@@ -106,11 +133,24 @@ export class QuestionsService {
       include: {
         ...questionIncludeConfig,
         answers: {
-          include: answerIncludeConfig,
+          include: {
+            ...answerIncludeConfig,
+            children: {
+              include: {
+                user: userConfig,
+              },
+              orderBy: {
+                created_at: 'desc',
+              },
+            },
+          },
           where: { parent_id: null },
           orderBy: [
             {
               is_accepted: 'desc',
+            },
+            {
+              created_at: 'desc',
             },
           ],
         },
@@ -156,11 +196,24 @@ export class QuestionsService {
       include: {
         ...questionIncludeConfig,
         answers: {
-          include: answerIncludeConfig,
+          include: {
+            ...answerIncludeConfig,
+            children: {
+              include: {
+                user: userConfig,
+              },
+              orderBy: {
+                created_at: 'desc',
+              },
+            },
+          },
           where: { parent_id: null },
           orderBy: [
             {
               is_accepted: 'desc',
+            },
+            {
+              created_at: 'desc',
             },
           ],
         },
@@ -182,11 +235,24 @@ export class QuestionsService {
       include: {
         ...questionIncludeConfig,
         answers: {
-          include: answerIncludeConfig,
+          include: {
+            ...answerIncludeConfig,
+            children: {
+              include: {
+                user: userConfig,
+              },
+              orderBy: {
+                created_at: 'desc',
+              },
+            },
+          },
           where: { parent_id: null },
           orderBy: [
             {
               is_accepted: 'desc',
+            },
+            {
+              created_at: 'desc',
             },
           ],
         },
